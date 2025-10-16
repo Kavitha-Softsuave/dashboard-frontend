@@ -50,7 +50,7 @@ function UploadPage() {
           <h1 className="text-3xl font-bold">Upload File</h1>
         </div>
       </div>
-      <div className="flex flex-col items-center justify-center h-[60vh] bg-[#fcfcfc] w-96 mx-auto">
+      <div className="flex flex-col items-center justify-center h-[60vh] w-96 mx-auto">
         {/* Upload Container */}
         <div
           className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-2xl w-96 h-64 cursor-pointer transition-all duration-300 ${
