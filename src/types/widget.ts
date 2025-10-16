@@ -1,11 +1,11 @@
-export type ChartType = 'bar' | 'line' | 'pie' | 'area' | 'scatter';
+export type ChartType = "bar" | "line" | "pie" | "area" | "scatter";
 
 export interface ChartConfig {
   xAxis: string;
   yAxis: string;
   chartType: ChartType;
   title: string;
-  subtitle?: string;
+  description?: string;
   showLegend: boolean;
   showGrid: boolean;
   xAxisLabel?: string;

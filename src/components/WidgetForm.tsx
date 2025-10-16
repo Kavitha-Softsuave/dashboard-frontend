@@ -40,7 +40,7 @@ export const WidgetForm = ({
       yAxis: "",
       chartType: "bar",
       title: "New Chart",
-      subtitle: "",
+      description: "",
       showLegend: true,
       showGrid: true,
       xAxisLabel: "",
@@ -79,12 +79,14 @@ export const WidgetForm = ({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="subtitle">Subtitle (Optional)</Label>
+        <Label htmlFor="description">Description (Optional)</Label>
         <Input
-          id="subtitle"
-          value={config.subtitle || ""}
-          onChange={(e) => setConfig({ ...config, subtitle: e.target.value })}
-          placeholder="Chart Subtitle"
+          id="description"
+          value={config.description || ""}
+          onChange={(e) =>
+            setConfig({ ...config, description: e.target.value })
+          }
+          placeholder="Chart description"
         />
       </div>
 

@@ -166,6 +166,7 @@ const DashboardBuilder = () => {
     dispatch(saveDashboard());
     toast.success("Dashboard saved successfully");
     setIsWidgetListOpen(false);
+    setIsEditDashboard(false);
     // navigate("/");
   };
 
