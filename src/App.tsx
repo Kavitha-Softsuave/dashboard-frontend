@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import WidgetManagement from "./pages/WidgetManagement";
 import DashboardBuilder from "./pages/DashboardBuilder";
 import NotFound from "./pages/NotFound";
+import UploadPage from "./pages/UploadPage";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/widgets" element={<WidgetManagement />} />
             <Route path="/dashboard" element={<DashboardBuilder />} />
+            <Route path="/upload" element={<UploadPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

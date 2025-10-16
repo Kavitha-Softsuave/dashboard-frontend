@@ -1,15 +1,20 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { addWidget, updateWidget, deleteWidget } from '@/store/widgetSlice';
-import { Widget } from '@/types/widget';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { WidgetForm } from '@/components/WidgetForm';
-import { WidgetPreview } from '@/components/WidgetPreview';
-import { Card } from '@/components/ui/card';
-import { Edit, Trash2, Plus, ArrowLeft } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { addWidget, updateWidget, deleteWidget } from "@/store/widgetSlice";
+import { Widget } from "@/types/widget";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { WidgetForm } from "@/components/WidgetForm";
+import { WidgetPreview } from "@/components/WidgetPreview";
+import { Card } from "@/components/ui/card";
+import { Edit, Trash2, Plus, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 const WidgetManagement = () => {
   const navigate = useNavigate();
@@ -21,7 +26,7 @@ const WidgetManagement = () => {
   const handleSaveWidget = (config: any) => {
     if (editingWidget) {
       dispatch(updateWidget({ ...editingWidget, config }));
-      toast.success('Widget updated successfully');
+      toast.success("Widget updated successfully");
     } else {
       const newWidget: Widget = {
         id: Date.now().toString(),
@@ -29,7 +34,7 @@ const WidgetManagement = () => {
         createdAt: new Date().toISOString(),
       };
       dispatch(addWidget(newWidget));
-      toast.success('Widget created successfully');
+      toast.success("Widget created successfully");
     }
     setIsSheetOpen(false);
     setEditingWidget(null);
@@ -42,7 +47,7 @@ const WidgetManagement = () => {
 
   const handleDelete = (id: string) => {
     dispatch(deleteWidget(id));
-    toast.success('Widget deleted successfully');
+    toast.success("Widget deleted successfully");
   };
 
   const handleAddNew = () => {
@@ -51,11 +56,11 @@ const WidgetManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
+    <div className="min-h-screen bg-background">
+      <div className="">
+        <div className="flex items-center justify-between text-white bg-[#614b75] p-3">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <h1 className="text-3xl font-bold">Widget Management</h1>
@@ -72,7 +77,7 @@ const WidgetManagement = () => {
             <Button onClick={handleAddNew}>Create Your First Widget</Button>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-3">
             {widgets.map((widget) => (
               <Card key={widget.id} className="p-4">
                 <div className="h-64 mb-4">
@@ -107,7 +112,9 @@ const WidgetManagement = () => {
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="w-full sm:max-w-md overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>{editingWidget ? 'Edit Widget' : 'Create Widget'}</SheetTitle>
+            <SheetTitle>
+              {editingWidget ? "Edit Widget" : "Create Widget"}
+            </SheetTitle>
           </SheetHeader>
           <WidgetForm
             initialConfig={editingWidget?.config}
