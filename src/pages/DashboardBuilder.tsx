@@ -20,13 +20,15 @@ import {
 } from "@/components/ui/sheet";
 import { WidgetPreview } from "@/components/WidgetPreview";
 import { WidgetForm } from "@/components/WidgetForm";
-import { ArrowLeft, Plus, Save } from "lucide-react";
+import { ArrowLeft, Plus, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import GridLayout, { Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { addWidget, updateWidget } from "@/store/widgetSlice";
 import { useResizeObserver } from "@/hooks/use-resize";
+import { Toggle } from "@/components/ui/toggle";
+import { Switch } from "@/components/ui/switch";
 
 const DashboardBuilder = () => {
   const navigate = useNavigate();
@@ -37,6 +39,7 @@ const DashboardBuilder = () => {
   );
   const [isWidgetListOpen, setIsWidgetListOpen] = useState(true);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [isEditDashboard, setIsEditDashboard] = useState(false);
   const [editingWidget, setEditingWidget] = useState<Widget | null>(null);
   const [editingWidgetId, setEditingWidgetId] = useState<string | null>(null);
   const [draggedWidgetId, setDraggedWidgetId] = useState<string | null>(null);
@@ -117,7 +120,7 @@ const DashboardBuilder = () => {
     };
 
     dispatch(addWidgetToDashboard(newDashboardWidget));
-    handleEditWidget(widgets.find((w) => w.id === widgetId)!);
+    // handleEditWidget(widgets.find((w) => w.id === widgetId)!);
     toast.success("Widget added to dashboard");
   };
 
@@ -162,7 +165,8 @@ const DashboardBuilder = () => {
   const handleSaveDashboard = () => {
     dispatch(saveDashboard());
     toast.success("Dashboard saved successfully");
-    navigate("/");
+    setIsWidgetListOpen(false);
+    // navigate("/");
   };
 
   const handleEditWidget = (widget: Widget) => {
@@ -220,21 +224,33 @@ const DashboardBuilder = () => {
       <div className="border-b bg-card">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            {/* <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
               <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="text-2xl font-bold">Dashboard Builder</h1>
+            </Button> */}
+            <h1 className="text-2xl font-bold">Dashboard</h1>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-1">
+              Edit{" "}
+              <Switch
+                onClick={() => {
+                  if (!isEditDashboard) {
+                    setIsWidgetListOpen(false);
+                  }
+                  setIsEditDashboard(!isEditDashboard);
+                }}
+              />
+            </div>
             <Button
               variant="outline"
               onClick={() => setIsWidgetListOpen(!isWidgetListOpen)}
             >
-              {isWidgetListOpen ? "Hide" : "Show"} Widgets
+              {/* {isWidgetListOpen ? "Hide" : "Show"}  */}
+              Add Widgets
             </Button>
             <Button onClick={handleSaveDashboard}>
               <Save className="mr-2 h-4 w-4" />
-              Save Dashboard
+              Save
             </Button>
           </div>
         </div>
@@ -242,9 +258,15 @@ const DashboardBuilder = () => {
 
       <div className="flex h-[calc(100vh-73px)]">
         {/* Widget List Sidebar */}
-        {isWidgetListOpen && (
+        {isWidgetListOpen && isEditDashboard && (
           <div className="w-80 border-r bg-card p-4 overflow-y-auto flex flex-col">
-            <h2 className="text-lg font-semibold mb-4">Available Widgets</h2>
+            <div className="flex justify-between">
+              <h2 className="text-lg font-semibold mb-4">Available Widgets</h2>
+              <X
+                className="cursor-pointer"
+                onClick={() => setIsWidgetListOpen(false)}
+              />
+            </div>
             <div className="flex flex-col justify-between h-full overflow-hidden">
               <div className="">
                 {widgets.length === 0 ? (
@@ -321,8 +343,8 @@ const DashboardBuilder = () => {
               rowHeight={70}
               width={containerWidth}
               onLayoutChange={handleLayoutChange}
-              isDraggable={true}
-              isResizable={true}
+              isDraggable={isEditDashboard}
+              isResizable={isEditDashboard}
               compactType="vertical"
               preventCollision={false}
             >
@@ -335,7 +357,7 @@ const DashboardBuilder = () => {
                     widget={widget!}
                     onEdit={() => handleEditWidget(widget)}
                     onDelete={() => handleDeleteWidget(widget!.id)}
-                    showEditButton={true}
+                    showEditButton={isEditDashboard}
                   />
                 </div>
               ))}
