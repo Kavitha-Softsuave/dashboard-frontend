@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { useAppSelector } from "@/store/hooks";
 
 interface WidgetFormProps {
   initialConfig?: ChartConfig;
@@ -35,8 +36,8 @@ export const WidgetForm = ({
 }: WidgetFormProps) => {
   const [config, setConfig] = useState<ChartConfig>(
     initialConfig || {
-      xAxis: "Category",
-      yAxis: "Value",
+      xAxis: "",
+      yAxis: "",
       chartType: "bar",
       title: "New Chart",
       subtitle: "",
@@ -50,6 +51,18 @@ export const WidgetForm = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (
+      config.title.trim() === "" ||
+      config.xAxis.trim() === "" ||
+      config.yAxis.trim() === "" ||
+      config.chartType.trim() === ""
+    ) {
+      toast.error("Please fill in all fields");
+      return;
+    } else if (config.xAxis === config.yAxis) {
+      toast.error("X-Axis and Y-Axis cannot be the same");
+      return;
+    }
     onSave(config);
   };
 
@@ -108,11 +121,7 @@ export const WidgetForm = ({
           <Select
             value={config.xAxis}
             onValueChange={(value: ChartType) => {
-              if (config.yAxis !== value) {
-                setConfig({ ...config, xAxis: value });
-              } else {
-                toast.error("xAxis and yAxis cannot be same");
-              }
+              setConfig({ ...config, xAxis: value });
             }}
           >
             <SelectTrigger id="xAxis">
@@ -139,11 +148,7 @@ export const WidgetForm = ({
           <Select
             value={config.yAxis}
             onValueChange={(value: ChartType) => {
-              if (config.xAxis !== value) {
-                setConfig({ ...config, yAxis: value });
-              } else {
-                toast.error("xAxis and yAxis cannot be same");
-              }
+              setConfig({ ...config, yAxis: value });
             }}
           >
             <SelectTrigger id="yAxis">

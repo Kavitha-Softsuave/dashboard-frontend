@@ -113,10 +113,11 @@ const DashboardBuilder = () => {
       x,
       y,
       w: 4,
-      h: 3,
+      h: 4,
     };
 
     dispatch(addWidgetToDashboard(newDashboardWidget));
+    handleEditWidget(widgets.find((w) => w.id === widgetId)!);
     toast.success("Widget added to dashboard");
   };
 
@@ -139,6 +140,13 @@ const DashboardBuilder = () => {
       dispatch(updateWidget({ ...editingWidget, config }));
       toast.success("Widget updated successfully");
     } else {
+      const duplicateWidget = widgets.find(
+        (w) => w.config.title === config.title
+      );
+      if (duplicateWidget) {
+        toast.error("A widget with this title already exists");
+        return;
+      }
       const newWidget: Widget = {
         id: Date.now().toString(),
         config,
@@ -310,8 +318,8 @@ const DashboardBuilder = () => {
                 minH: 4,
               }))}
               cols={12}
-              rowHeight={100}
-              width={containerWidth}
+              rowHeight={65}
+              width={1400}
               onLayoutChange={handleLayoutChange}
               isDraggable={true}
               isResizable={true}

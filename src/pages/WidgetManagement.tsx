@@ -28,6 +28,13 @@ const WidgetManagement = () => {
       dispatch(updateWidget({ ...editingWidget, config }));
       toast.success("Widget updated successfully");
     } else {
+      const duplicateWidget = widgets.find(
+        (w) => w.config.title === config.title
+      );
+      if (duplicateWidget) {
+        toast.error("A widget with this title already exists");
+        return;
+      }
       const newWidget: Widget = {
         id: Date.now().toString(),
         config,
