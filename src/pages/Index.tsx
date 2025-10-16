@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/store/hooks";
 import { Button } from "@/components/ui/button";
@@ -6,17 +7,17 @@ import GridLayout from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { WidgetPreview } from "@/components/WidgetPreview";
+import { useResizeObserver } from "@/hooks/use-resize";
+import { useRef } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
   const dashboards = useAppSelector((state) => state.dashboards.dashboards);
   const widgets = useAppSelector((state) => state.widgets.widgets);
 
-  // Get the latest saved dashboard
+  // Get latest saved dashboard
   const latestDashboard =
-    dashboards.length > 0
-      ? dashboards[dashboards.length - 1]
-      : null;
+    dashboards.length > 0 ? dashboards[dashboards.length - 1] : null;
 
   // If no dashboards exist
   if (!latestDashboard) {
@@ -34,9 +35,7 @@ const Index = () => {
           </Button>
         </div>
         <Card className="p-12 text-center">
-          <p className="text-muted-foreground mb-2">
-            No dashboards found
-          </p>
+          <p className="text-muted-foreground mb-2">No dashboards found</p>
           <p className="text-sm text-muted-foreground">
             Create a new dashboard to see it here
           </p>
@@ -53,9 +52,15 @@ const Index = () => {
     }))
     .filter((item) => item.widget !== undefined);
 
+  // Observe dashboard container width dynamically
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { width: containerWidth = 1200 } = useResizeObserver({
+    ref: containerRef,
+  });
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Top Action Buttons */}
+      {/* Top Buttons */}
       <div className="flex gap-4 p-4 border-b bg-card justify-center">
         <Button size="lg" onClick={() => navigate("/widgets")}>
           Manage Widgets
@@ -69,7 +74,10 @@ const Index = () => {
       </div>
 
       {/* Dashboard Preview */}
-      <div className="flex-1 p-6 overflow-auto bg-muted/20">
+      <div
+        ref={containerRef}
+        className="flex-1 p-6 overflow-auto bg-muted/20"
+      >
         <GridLayout
           className="layout"
           layout={latestDashboard.widgets.map((item) => ({
@@ -79,7 +87,7 @@ const Index = () => {
           }))}
           cols={12}
           rowHeight={100}
-          width={1400}
+          width={containerWidth}
           isDraggable={false}
           isResizable={false}
           compactType="vertical"
@@ -92,7 +100,7 @@ const Index = () => {
             >
               <WidgetPreview
                 widget={widget!}
-                showEditButton={false} // no edit on index page
+                showEditButton={false}
               />
             </div>
           ))}

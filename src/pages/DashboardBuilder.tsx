@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -26,6 +26,7 @@ import GridLayout, { Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { addWidget, updateWidget } from "@/store/widgetSlice";
+import { useResizeObserver } from "@/hooks/use-resize";
 
 const DashboardBuilder = () => {
   const navigate = useNavigate();
@@ -51,6 +52,11 @@ const DashboardBuilder = () => {
       dispatch(setCurrentDashboard(newDashboard));
     }
   }, [currentDashboard, dispatch]);
+
+  const dashboardRef = useRef<HTMLDivElement>(null);
+  const { width: containerWidth = 1200 } = useResizeObserver({
+    ref: dashboardRef,
+  });
 
   const calculateNextPosition = (): { x: number; y: number } => {
     if (!currentDashboard || currentDashboard.widgets.length === 0) {
@@ -148,7 +154,7 @@ const DashboardBuilder = () => {
   const handleSaveDashboard = () => {
     dispatch(saveDashboard());
     toast.success("Dashboard saved successfully");
-    navigate('/');
+    navigate("/");
   };
 
   const handleEditWidget = (widget: Widget) => {
@@ -280,6 +286,7 @@ const DashboardBuilder = () => {
 
         {/* Dashboard Canvas */}
         <div
+          ref={dashboardRef}
           className="flex-1 p-6 overflow-auto bg-muted/20"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -299,12 +306,12 @@ const DashboardBuilder = () => {
               className="layout"
               layout={currentDashboard.widgets.map((item) => ({
                 ...item,
-                minW: 4, // minimum width in grid columns
-                minH: 4, // minimum height in grid rows
+                minW: 4,
+                minH: 4,
               }))}
               cols={12}
               rowHeight={100}
-              width={1400}
+              width={containerWidth}
               onLayoutChange={handleLayoutChange}
               isDraggable={true}
               isResizable={true}
