@@ -165,14 +165,14 @@ export const WidgetPreview = ({
               onMouseDown={(e) => e.stopPropagation()}
               className="text-xs px-3 py-1 text-black hover:text-primary-foreground rounded hover:bg-primary/90"
             >
-              <Edit className="h-5 w-5"/>
+              <Edit className="h-5 w-5" />
             </button>
             <button
               onClick={onDelete}
               onMouseDown={(e) => e.stopPropagation()}
               className="text-xs px-3 py-1 text-black hover:text-primary-foreground rounded hover:bg-primary/90"
             >
-              <Trash2 className="h-5 w-5"/>
+              <Trash2 className="h-5 w-5" />
             </button>
           </div>
         )}

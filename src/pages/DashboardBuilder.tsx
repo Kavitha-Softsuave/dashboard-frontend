@@ -8,7 +8,7 @@ import {
   addWidgetToDashboard,
   removeWidgetFromDashboard,
 } from "@/store/dashboardSlice";
-import { Dashboard, DashboardWidget } from "@/types/widget";
+import { Dashboard, DashboardWidget, Widget } from "@/types/widget";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import GridLayout, { Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import { addWidget, updateWidget } from "@/store/widgetSlice";
 
 const DashboardBuilder = () => {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const DashboardBuilder = () => {
   );
   const [isWidgetListOpen, setIsWidgetListOpen] = useState(true);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [editingWidget, setEditingWidget] = useState<Widget | null>(null);
   const [editingWidgetId, setEditingWidgetId] = useState<string | null>(null);
   const [draggedWidgetId, setDraggedWidgetId] = useState<string | null>(null);
 
@@ -125,16 +127,38 @@ const DashboardBuilder = () => {
     dispatch(updateDashboardLayout(updatedWidgets));
   };
 
+  const handleSaveWidget = (config: any) => {
+    if (editingWidget) {
+      dispatch(updateWidget({ ...editingWidget, config }));
+      toast.success("Widget updated successfully");
+    } else {
+      const newWidget: Widget = {
+        id: Date.now().toString(),
+        config,
+        createdAt: new Date().toISOString(),
+      };
+      dispatch(addWidget(newWidget));
+      toast.success("Widget created successfully");
+    }
+    setIsEditSheetOpen(false);
+    setEditingWidget(null);
+  };
+
   const handleSaveDashboard = () => {
     dispatch(saveDashboard());
     toast.success("Dashboard saved successfully");
   };
 
-  const handleEditWidget = (widgetId: string) => {
-    setEditingWidgetId(widgetId);
+  const handleEditWidget = (widget: Widget) => {
+    setEditingWidgetId(widget.id);
+    setEditingWidget(widget);
     setIsEditSheetOpen(true);
   };
 
+  const handleAddNew = () => {
+    setEditingWidget(null);
+    setIsEditSheetOpen(true);
+  };
   const handleDeleteWidget = (widgetId: string) => {
     if (!currentDashboard) return;
 
@@ -203,42 +227,52 @@ const DashboardBuilder = () => {
       <div className="flex h-[calc(100vh-73px)]">
         {/* Widget List Sidebar */}
         {isWidgetListOpen && (
-          <div className="w-80 border-r bg-card p-4 overflow-y-auto">
+          <div className="w-80 border-r bg-card p-4 overflow-y-auto flex flex-col">
             <h2 className="text-lg font-semibold mb-4">Available Widgets</h2>
-            {widgets.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No widgets available
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {widgets.map((widget) => (
-                  <Card
-                    key={widget.id}
-                    className="p-3 cursor-move hover:border-primary transition-colors"
-                    draggable
-                    onDragStart={() => handleDragStart(widget.id)}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium text-sm">
-                        {widget.config.title}
-                      </h3>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleAddWidget(widget.id)}
+            <div className="flex flex-col justify-between h-full overflow-hidden">
+              <div className="">
+                {widgets.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    No widgets available
+                  </p>
+                ) : (
+                  <div className="space-y-3 px-2 overflow-auto custom-scrollbar h-[calc(100vh-200px)] ">
+                    {widgets.map((widget) => (
+                      <Card
+                        key={widget.id}
+                        className="p-3 cursor-move hover:border-primary transition-colors"
+                        draggable
+                        onDragStart={() => handleDragStart(widget.id)}
                       >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {widget.config.chartType.charAt(0).toUpperCase() +
-                        widget.config.chartType.slice(1)}{" "}
-                      Chart
-                    </p>
-                  </Card>
-                ))}
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-medium text-sm">
+                            {widget.config.title}
+                          </h3>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleAddWidget(widget.id)}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {widget.config.chartType.charAt(0).toUpperCase() +
+                            widget.config.chartType.slice(1)}{" "}
+                          Chart
+                        </p>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
+              <div className="flex justify-center items-center">
+                <Button onClick={handleAddNew}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Widget
+                </Button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -261,10 +295,14 @@ const DashboardBuilder = () => {
           ) : (
             <GridLayout
               className="layout"
-              layout={currentDashboard.widgets}
+              layout={currentDashboard.widgets.map((item) => ({
+                ...item,
+                minW: 4, // minimum width in grid columns
+                minH: 4, // minimum height in grid rows
+              }))}
               cols={12}
-              rowHeight={60}
-              width={1200}
+              rowHeight={65}
+              width={1400}
               onLayoutChange={handleLayoutChange}
               isDraggable={true}
               isResizable={true}
@@ -278,7 +316,7 @@ const DashboardBuilder = () => {
                 >
                   <WidgetPreview
                     widget={widget!}
-                    onEdit={() => handleEditWidget(widget!.id)}
+                    onEdit={() => handleEditWidget(widget)}
                     onDelete={() => handleDeleteWidget(widget!.id)}
                     showEditButton={true}
                   />
@@ -295,23 +333,19 @@ const DashboardBuilder = () => {
           <SheetHeader>
             <SheetTitle>Edit Widget Configuration</SheetTitle>
           </SheetHeader>
-          {editingWidgetId && (
+          {
             <WidgetForm
               initialConfig={
-                widgets.find((w) => w.id === editingWidgetId)?.config
+                widgets.find((w) => w.id === editingWidgetId)?.config ||
+                editingWidget?.config
               }
-              onSave={(config) => {
-                // Handle widget config update
-                setIsEditSheetOpen(false);
-                setEditingWidgetId(null);
-                toast.success("Widget configuration updated");
-              }}
+              onSave={handleSaveWidget}
               onCancel={() => {
                 setIsEditSheetOpen(false);
                 setEditingWidgetId(null);
               }}
             />
-          )}
+          }
         </SheetContent>
       </Sheet>
     </div>
