@@ -1,31 +1,49 @@
-import { useState, useEffect } from 'react';
-import { ChartConfig, ChartType } from '@/types/widget';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
+import { useState, useEffect } from "react";
+import { ChartConfig, ChartType } from "@/types/widget";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 
 interface WidgetFormProps {
   initialConfig?: ChartConfig;
   onSave: (config: ChartConfig) => void;
   onCancel: () => void;
 }
+const metricColumns = [
+  "Sales",
+  "Profit",
+  "Quantity",
+  "Month",
+  "Region",
+  "Category",
+];
+const DEFAULT_COLORS = ["#8b5cf6", "#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
 
-const DEFAULT_COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
-
-export const WidgetForm = ({ initialConfig, onSave, onCancel }: WidgetFormProps) => {
+export const WidgetForm = ({
+  initialConfig,
+  onSave,
+  onCancel,
+}: WidgetFormProps) => {
   const [config, setConfig] = useState<ChartConfig>(
     initialConfig || {
-      xAxis: 'Category',
-      yAxis: 'Value',
-      chartType: 'bar',
-      title: 'New Chart',
-      subtitle: '',
+      xAxis: "Category",
+      yAxis: "Value",
+      chartType: "bar",
+      title: "New Chart",
+      subtitle: "",
       showLegend: true,
       showGrid: true,
-      xAxisLabel: '',
-      yAxisLabel: '',
+      xAxisLabel: "",
+      yAxisLabel: "",
       colorPalette: DEFAULT_COLORS,
     }
   );
@@ -51,7 +69,7 @@ export const WidgetForm = ({ initialConfig, onSave, onCancel }: WidgetFormProps)
         <Label htmlFor="subtitle">Subtitle (Optional)</Label>
         <Input
           id="subtitle"
-          value={config.subtitle || ''}
+          value={config.subtitle || ""}
           onChange={(e) => setConfig({ ...config, subtitle: e.target.value })}
           placeholder="Chart Subtitle"
         />
@@ -61,7 +79,9 @@ export const WidgetForm = ({ initialConfig, onSave, onCancel }: WidgetFormProps)
         <Label htmlFor="chartType">Chart Type</Label>
         <Select
           value={config.chartType}
-          onValueChange={(value: ChartType) => setConfig({ ...config, chartType: value })}
+          onValueChange={(value: ChartType) =>
+            setConfig({ ...config, chartType: value })
+          }
         >
           <SelectTrigger id="chartType">
             <SelectValue />
@@ -79,22 +99,64 @@ export const WidgetForm = ({ initialConfig, onSave, onCancel }: WidgetFormProps)
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="xAxis">X-Axis</Label>
-          <Input
+          {/* <Input
             id="xAxis"
             value={config.xAxis}
             onChange={(e) => setConfig({ ...config, xAxis: e.target.value })}
             placeholder="X-Axis Name"
-          />
+          /> */}
+          <Select
+            value={config.xAxis}
+            onValueChange={(value: ChartType) => {
+              if (config.yAxis !== value) {
+                setConfig({ ...config, xAxis: value });
+              } else {
+                toast.error("xAxis and yAxis cannot be same");
+              }
+            }}
+          >
+            <SelectTrigger id="xAxis">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {metricColumns?.map((col) => (
+                <SelectItem key={col} value={col}>
+                  {col}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="yAxis">Y-Axis</Label>
-          <Input
+          {/* <Input
             id="yAxis"
             value={config.yAxis}
             onChange={(e) => setConfig({ ...config, yAxis: e.target.value })}
             placeholder="Y-Axis Name"
-          />
+          /> */}
+          <Select
+            value={config.yAxis}
+            onValueChange={(value: ChartType) => {
+              if (config.xAxis !== value) {
+                setConfig({ ...config, yAxis: value });
+              } else {
+                toast.error("xAxis and yAxis cannot be same");
+              }
+            }}
+          >
+            <SelectTrigger id="yAxis">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {metricColumns?.map((col) => (
+                <SelectItem key={col} value={col}>
+                  {col}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -103,8 +165,10 @@ export const WidgetForm = ({ initialConfig, onSave, onCancel }: WidgetFormProps)
           <Label htmlFor="xAxisLabel">X-Axis Label (Optional)</Label>
           <Input
             id="xAxisLabel"
-            value={config.xAxisLabel || ''}
-            onChange={(e) => setConfig({ ...config, xAxisLabel: e.target.value })}
+            value={config.xAxisLabel || ""}
+            onChange={(e) =>
+              setConfig({ ...config, xAxisLabel: e.target.value })
+            }
             placeholder="Label"
           />
         </div>
@@ -113,8 +177,10 @@ export const WidgetForm = ({ initialConfig, onSave, onCancel }: WidgetFormProps)
           <Label htmlFor="yAxisLabel">Y-Axis Label (Optional)</Label>
           <Input
             id="yAxisLabel"
-            value={config.yAxisLabel || ''}
-            onChange={(e) => setConfig({ ...config, yAxisLabel: e.target.value })}
+            value={config.yAxisLabel || ""}
+            onChange={(e) =>
+              setConfig({ ...config, yAxisLabel: e.target.value })
+            }
             placeholder="Label"
           />
         </div>
@@ -125,7 +191,9 @@ export const WidgetForm = ({ initialConfig, onSave, onCancel }: WidgetFormProps)
         <Switch
           id="showLegend"
           checked={config.showLegend}
-          onCheckedChange={(checked) => setConfig({ ...config, showLegend: checked })}
+          onCheckedChange={(checked) =>
+            setConfig({ ...config, showLegend: checked })
+          }
         />
       </div>
 
@@ -134,7 +202,9 @@ export const WidgetForm = ({ initialConfig, onSave, onCancel }: WidgetFormProps)
         <Switch
           id="showGrid"
           checked={config.showGrid}
-          onCheckedChange={(checked) => setConfig({ ...config, showGrid: checked })}
+          onCheckedChange={(checked) =>
+            setConfig({ ...config, showGrid: checked })
+          }
         />
       </div>
 
@@ -142,7 +212,12 @@ export const WidgetForm = ({ initialConfig, onSave, onCancel }: WidgetFormProps)
         <Button type="submit" className="flex-1">
           Save Widget
         </Button>
-        <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          className="flex-1"
+        >
           Cancel
         </Button>
       </div>
