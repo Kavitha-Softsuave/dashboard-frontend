@@ -154,8 +154,10 @@ export const WidgetPreview = ({
       <div className="flex items-start justify-between mb-2">
         <div>
           <h3 className="font-semibold text-lg">{config.title}</h3>
-          {config.subtitle && (
-            <p className="text-sm text-muted-foreground">{config.subtitle}</p>
+          {config.description && (
+            <p className="text-sm text-muted-foreground">
+              {config.description}
+            </p>
           )}
         </div>
         {showEditButton && onEdit && onDelete && (
