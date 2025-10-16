@@ -1,54 +1,102 @@
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { LayoutDashboard, BoxSelect } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "@/store/hooks";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import GridLayout from "react-grid-layout";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
+import { WidgetPreview } from "@/components/WidgetPreview";
 
 const Index = () => {
   const navigate = useNavigate();
+  const dashboards = useAppSelector((state) => state.dashboards.dashboards);
+  const widgets = useAppSelector((state) => state.widgets.widgets);
+
+  // Get the latest saved dashboard
+  const latestDashboard =
+    dashboards.length > 0
+      ? dashboards[dashboards.length - 1]
+      : null;
+
+  // If no dashboards exist
+  if (!latestDashboard) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8">
+        <div className="flex gap-4 mb-8">
+          <Button size="lg" onClick={() => navigate("/widgets")}>
+            Manage Widgets
+          </Button>
+          <Button size="lg" onClick={() => navigate("/dashboard")}>
+            Build Dashboard
+          </Button>
+          <Button size="lg" onClick={() => navigate("/upload")}>
+            Upload Files
+          </Button>
+        </div>
+        <Card className="p-12 text-center">
+          <p className="text-muted-foreground mb-2">
+            No dashboards found
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Create a new dashboard to see it here
+          </p>
+        </Card>
+      </div>
+    );
+  }
+
+  // Map dashboard widgets with actual widget config
+  const dashboardWidgets = latestDashboard.widgets
+    .map((dw) => ({
+      dashboardWidget: dw,
+      widget: widgets.find((w) => w.id === dw.i),
+    }))
+    .filter((item) => item.widget !== undefined);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted flex items-center justify-center p-6">
-      <div className="max-w-4xl w-full">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Dashboard & Widget Manager
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            Create powerful data visualizations and build custom dashboards
-          </p>
-        </div>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Top Action Buttons */}
+      <div className="flex gap-4 p-4 border-b bg-card justify-center">
+        <Button size="lg" onClick={() => navigate("/widgets")}>
+          Manage Widgets
+        </Button>
+        <Button size="lg" onClick={() => navigate("/dashboard")}>
+          Build Dashboard
+        </Button>
+        <Button size="lg" onClick={() => navigate("/upload")}>
+          Upload Files
+        </Button>
+      </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="p-8 hover:shadow-lg transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary" onClick={() => navigate('/widgets')}>
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="p-4 bg-primary/10 rounded-full">
-                <BoxSelect className="h-12 w-12 text-primary" />
-              </div>
-              <h2 className="text-2xl font-semibold">Create Widget</h2>
-              <p className="text-muted-foreground">
-                Design and configure chart widgets with various visualization types
-              </p>
-              <Button className="w-full mt-4" size="lg">
-                Manage Widgets
-              </Button>
+      {/* Dashboard Preview */}
+      <div className="flex-1 p-6 overflow-auto bg-muted/20">
+        <GridLayout
+          className="layout"
+          layout={latestDashboard.widgets.map((item) => ({
+            ...item,
+            minW: 4,
+            minH: 4,
+          }))}
+          cols={12}
+          rowHeight={100}
+          width={1400}
+          isDraggable={false}
+          isResizable={false}
+          compactType="vertical"
+          preventCollision={false}
+        >
+          {dashboardWidgets.map(({ dashboardWidget, widget }) => (
+            <div
+              key={dashboardWidget.i}
+              className="bg-background rounded-lg shadow-sm"
+            >
+              <WidgetPreview
+                widget={widget!}
+                showEditButton={false} // no edit on index page
+              />
             </div>
-          </Card>
-
-          <Card className="p-8 hover:shadow-lg transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary" onClick={() => navigate('/dashboard')}>
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="p-4 bg-primary/10 rounded-full">
-                <LayoutDashboard className="h-12 w-12 text-primary" />
-              </div>
-              <h2 className="text-2xl font-semibold">Create Dashboard</h2>
-              <p className="text-muted-foreground">
-                Build interactive dashboards by arranging and resizing widgets
-              </p>
-              <Button className="w-full mt-4" size="lg">
-                Build Dashboard
-              </Button>
-            </div>
-          </Card>
-        </div>
+          ))}
+        </GridLayout>
       </div>
     </div>
   );

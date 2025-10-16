@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -147,6 +148,7 @@ const DashboardBuilder = () => {
   const handleSaveDashboard = () => {
     dispatch(saveDashboard());
     toast.success("Dashboard saved successfully");
+    navigate('/');
   };
 
   const handleEditWidget = (widget: Widget) => {
@@ -301,7 +303,7 @@ const DashboardBuilder = () => {
                 minH: 4, // minimum height in grid rows
               }))}
               cols={12}
-              rowHeight={65}
+              rowHeight={100}
               width={1400}
               onLayoutChange={handleLayoutChange}
               isDraggable={true}
