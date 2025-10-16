@@ -318,8 +318,8 @@ const DashboardBuilder = () => {
                 minH: 4,
               }))}
               cols={12}
-              rowHeight={65}
-              width={1400}
+              rowHeight={70}
+              width={containerWidth}
               onLayoutChange={handleLayoutChange}
               isDraggable={true}
               isResizable={true}
