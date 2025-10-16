@@ -234,11 +234,12 @@ const DashboardBuilder = () => {
             <div className="flex items-center gap-1">
               Edit{" "}
               <Switch
-                onClick={() => {
-                  if (!isEditDashboard) {
+                checked={isEditDashboard}
+                onCheckedChange={(checked: boolean) => {
+                  if (checked) {
                     setIsWidgetListOpen(false);
                   }
-                  setIsEditDashboard(!isEditDashboard);
+                  setIsEditDashboard(!!checked);
                 }}
               />
             </div>
