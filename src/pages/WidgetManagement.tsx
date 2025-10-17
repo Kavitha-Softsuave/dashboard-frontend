@@ -67,7 +67,11 @@ const WidgetManagement = () => {
       <div className="">
         <div className="flex items-center justify-between text-white bg-[#614b75] p-3">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/dashboard")}
+            >
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <h1 className="text-3xl font-bold">Widget Management</h1>

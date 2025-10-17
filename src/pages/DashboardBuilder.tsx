@@ -306,10 +306,13 @@ const DashboardBuilder = () => {
                   </div>
                 )}
               </div>
-              <div className="flex justify-center items-center">
+              <div className="flex justify-center items-center gap-1">
                 <Button onClick={handleAddNew}>
                   <Plus className="mr-2 h-4 w-4" />
                   Add Widget
+                </Button>
+                <Button onClick={() => navigate("/widgets")}>
+                  Manage Widgets
                 </Button>
               </div>
             </div>

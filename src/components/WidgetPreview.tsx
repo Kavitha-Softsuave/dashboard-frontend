@@ -28,13 +28,87 @@ interface WidgetPreviewProps {
 }
 
 const SAMPLE_DATA = [
-  { name: "Jan", value: 400 },
-  { name: "Feb", value: 300 },
-  { name: "Mar", value: 600 },
-  { name: "Apr", value: 800 },
-  { name: "May", value: 500 },
+  {
+    Sales: 5000,
+    Profit: 1200,
+    Quantity: 50,
+    Month: "Jan",
+    Region: "North",
+    Category: "Electronics",
+  },
+  {
+    Sales: 7000,
+    Profit: 2000,
+    Quantity: 70,
+    Month: "Feb",
+    Region: "South",
+    Category: "Clothing",
+  },
+  {
+    Sales: 6500,
+    Profit: 1500,
+    Quantity: 60,
+    Month: "Mar",
+    Region: "East",
+    Category: "Furniture",
+  },
+  {
+    Sales: 8000,
+    Profit: 2500,
+    Quantity: 80,
+    Month: "Apr",
+    Region: "West",
+    Category: "Electronics",
+  },
+  {
+    Sales: 7200,
+    Profit: 1800,
+    Quantity: 65,
+    Month: "May",
+    Region: "North",
+    Category: "Clothing",
+  },
+  {
+    Sales: 6000,
+    Profit: 1300,
+    Quantity: 55,
+    Month: "Jun",
+    Region: "South",
+    Category: "Furniture",
+  },
+  {
+    Sales: 9000,
+    Profit: 3000,
+    Quantity: 90,
+    Month: "Jul",
+    Region: "East",
+    Category: "Electronics",
+  },
+  {
+    Sales: 7500,
+    Profit: 2200,
+    Quantity: 75,
+    Month: "Aug",
+    Region: "West",
+    Category: "Clothing",
+  },
+  {
+    Sales: 6800,
+    Profit: 1600,
+    Quantity: 60,
+    Month: "Sep",
+    Region: "North",
+    Category: "Furniture",
+  },
+  {
+    Sales: 8200,
+    Profit: 2400,
+    Quantity: 85,
+    Month: "Oct",
+    Region: "South",
+    Category: "Electronics",
+  },
 ];
-
 export const WidgetPreview = ({
   widget,
   onEdit,
@@ -44,19 +118,27 @@ export const WidgetPreview = ({
   const { config } = widget;
 
   const renderChart = () => {
+    const filteredData = SAMPLE_DATA.map((d) => {
+      return {
+        [config.xAxis]: d[config.xAxis],
+        [config.yAxis]: d[config.yAxis],
+      };
+    });
+
     const commonProps = {
-      data: SAMPLE_DATA,
+      data: filteredData,
       margin: { top: 10, right: 30, left: 0, bottom: 0 },
     };
 
     const xAxisProps = {
-      dataKey: "name",
+      dataKey: config.xAxis,
       label: config.xAxisLabel
         ? { value: config.xAxisLabel, position: "insideBottom", offset: -5 }
         : undefined,
     };
 
     const yAxisProps = {
+      dataKey: config.yAxis,
       label: config.yAxisLabel
         ? { value: config.yAxisLabel, angle: -90, position: "insideLeft" }
         : undefined,
@@ -71,7 +153,7 @@ export const WidgetPreview = ({
             <YAxis {...yAxisProps} />
             <Tooltip />
             {config.showLegend && <Legend />}
-            <Bar dataKey="value" fill={config.colorPalette[0]} />
+            <Bar dataKey={config.yAxis} fill={config.colorPalette[0]} />
           </BarChart>
         );
 
@@ -85,7 +167,7 @@ export const WidgetPreview = ({
             {config.showLegend && <Legend />}
             <Line
               type="monotone"
-              dataKey="value"
+              dataKey={config.yAxis}
               stroke={config.colorPalette[0]}
             />
           </LineChart>
@@ -95,15 +177,15 @@ export const WidgetPreview = ({
         return (
           <PieChart>
             <Pie
-              data={SAMPLE_DATA}
-              dataKey="value"
-              nameKey="name"
+              data={filteredData}
+              dataKey={config.yAxis}
+              nameKey={config.xAxis}
               cx="50%"
               cy="50%"
               outerRadius={80}
               label
             >
-              {SAMPLE_DATA.map((entry, index) => (
+              {filteredData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={config.colorPalette[index % config.colorPalette.length]}
@@ -125,7 +207,7 @@ export const WidgetPreview = ({
             {config.showLegend && <Legend />}
             <Area
               type="monotone"
-              dataKey="value"
+              dataKey={config.yAxis}
               stroke={config.colorPalette[0]}
               fill={config.colorPalette[0]}
             />
@@ -140,7 +222,7 @@ export const WidgetPreview = ({
             <YAxis {...yAxisProps} />
             <Tooltip />
             {config.showLegend && <Legend />}
-            <Scatter dataKey="value" fill={config.colorPalette[0]} />
+            <Scatter dataKey={config.yAxis} fill={config.colorPalette[0]} />
           </ScatterChart>
         );
 

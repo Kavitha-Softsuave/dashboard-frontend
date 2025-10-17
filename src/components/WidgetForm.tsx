@@ -13,20 +13,13 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { useAppSelector } from "@/store/hooks";
+import { ArrowLeftRight } from "lucide-react";
 
 interface WidgetFormProps {
   initialConfig?: ChartConfig;
   onSave: (config: ChartConfig) => void;
   onCancel: () => void;
 }
-const metricColumns = [
-  "Sales",
-  "Profit",
-  "Quantity",
-  "Month",
-  "Region",
-  "Category",
-];
 const DEFAULT_COLORS = ["#8b5cf6", "#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
 
 export const WidgetForm = ({
@@ -34,6 +27,16 @@ export const WidgetForm = ({
   onSave,
   onCancel,
 }: WidgetFormProps) => {
+  const [xColumns, setXColumns] = useState<string[]>([
+    "Month",
+    "Region",
+    "Category",
+  ]);
+  const [yColumns, setYColumns] = useState<string[]>([
+    "Sales",
+    "Profit",
+    "Quantity",
+  ]);
   const [config, setConfig] = useState<ChartConfig>(
     initialConfig || {
       xAxis: "",
@@ -64,6 +67,25 @@ export const WidgetForm = ({
       return;
     }
     onSave(config);
+  };
+
+  const handleSwapAxis = () => {
+    const tempX = [...xColumns];
+    setXColumns(yColumns);
+    setYColumns(tempX);
+    setConfig((prev) => ({
+      ...prev,
+      xAxis: prev.yAxis,
+      yAxis: prev.xAxis,
+    }));
+  };
+
+  const handleSwapColumnLabel = () => {
+    setConfig((prev) => ({
+      ...prev,
+      xAxisLabel: prev.yAxisLabel,
+      yAxisLabel: prev.xAxisLabel,
+    }));
   };
 
   return (
@@ -111,8 +133,8 @@ export const WidgetForm = ({
         </Select>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
+      <div className=" gap-4 flex items-end w-full">
+        <div className="space-y-2 w-full">
           <Label htmlFor="xAxis">X-Axis</Label>
           {/* <Input
             id="xAxis"
@@ -130,7 +152,7 @@ export const WidgetForm = ({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {metricColumns?.map((col) => (
+              {xColumns?.map((col) => (
                 <SelectItem key={col} value={col}>
                   {col}
                 </SelectItem>
@@ -138,8 +160,12 @@ export const WidgetForm = ({
             </SelectContent>
           </Select>
         </div>
-
         <div className="space-y-2">
+          <Button type="button" onClick={() => handleSwapAxis()}>
+            <ArrowLeftRight />
+          </Button>
+        </div>
+        <div className="space-y-2 w-full">
           <Label htmlFor="yAxis">Y-Axis</Label>
           {/* <Input
             id="yAxis"
@@ -157,7 +183,7 @@ export const WidgetForm = ({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {metricColumns?.map((col) => (
+              {yColumns?.map((col) => (
                 <SelectItem key={col} value={col}>
                   {col}
                 </SelectItem>
@@ -167,8 +193,8 @@ export const WidgetForm = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
+      <div className="gap-4 flex items-end w-full">
+        <div className="space-y-2 w-full">
           <Label htmlFor="xAxisLabel">X-Axis Label (Optional)</Label>
           <Input
             id="xAxisLabel"
@@ -179,8 +205,12 @@ export const WidgetForm = ({
             placeholder="Label"
           />
         </div>
-
         <div className="space-y-2">
+          <Button type="button" onClick={() => handleSwapColumnLabel()}>
+            <ArrowLeftRight />
+          </Button>
+        </div>
+        <div className="space-y-2 w-full">
           <Label htmlFor="yAxisLabel">Y-Axis Label (Optional)</Label>
           <Input
             id="yAxisLabel"
