@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Widget } from '@/types/widget';
 
 interface WidgetState {
+  widgetChartData: any;
   widgets: Widget[];
 }
 
 const initialState: WidgetState = {
   widgets: JSON.parse(localStorage.getItem('widgets') || '[]'),
+  widgetChartData: undefined
 };
 
 const widgetSlice = createSlice({
@@ -14,7 +17,7 @@ const widgetSlice = createSlice({
   initialState,
   reducers: {
     addWidget: (state, action: PayloadAction<Widget>) => {
-      state.widgets.push(action.payload);
+      state.widgets.push(action.payload); 
       localStorage.setItem('widgets', JSON.stringify(state.widgets));
     },
     updateWidget: (state, action: PayloadAction<Widget>) => {

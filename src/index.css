@@ -125,7 +125,7 @@
 
 @layer utilities {
   .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
+    width: 2px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;

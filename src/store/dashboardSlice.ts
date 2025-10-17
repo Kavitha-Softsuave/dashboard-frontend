@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Dashboard, DashboardWidget } from '@/types/widget';
 
 interface DashboardState {
+  columns: any;
   dashboards: Dashboard[];
   currentDashboard: Dashboard | null;
 }
@@ -9,6 +11,7 @@ interface DashboardState {
 const initialState: DashboardState = {
   dashboards: JSON.parse(localStorage.getItem('dashboards') || '[]'),
   currentDashboard: null,
+  columns: undefined
 };
 
 const dashboardSlice = createSlice({

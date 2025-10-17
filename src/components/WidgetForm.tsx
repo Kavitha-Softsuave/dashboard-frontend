@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { ChartConfig, ChartType } from "@/types/widget";
 import { Button } from "@/components/ui/button";
@@ -12,31 +13,29 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { useAppSelector } from "@/store/hooks";
 import { ArrowLeftRight } from "lucide-react";
+import { useSaveWidgetMutation } from "@/store/api";
 
 interface WidgetFormProps {
   initialConfig?: ChartConfig;
   onSave: (config: ChartConfig) => void;
   onCancel: () => void;
+  columns: any;
 }
+
 const DEFAULT_COLORS = ["#8b5cf6", "#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
 
 export const WidgetForm = ({
   initialConfig,
   onSave,
   onCancel,
+  columns,
 }: WidgetFormProps) => {
-  const [xColumns, setXColumns] = useState<string[]>([
-    "Month",
-    "Region",
-    "Category",
-  ]);
-  const [yColumns, setYColumns] = useState<string[]>([
-    "Sales",
-    "Profit",
-    "Quantity",
-  ]);
+  const [xColumns, setXColumns] = useState<string[]>([]);
+  const [yColumns, setYColumns] = useState<string[]>([]);
+
+  const [saveWidget, { isLoading }] = useSaveWidgetMutation();
+
   const [config, setConfig] = useState<ChartConfig>(
     initialConfig || {
       xAxis: "",
@@ -52,8 +51,25 @@ export const WidgetForm = ({
     }
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (columns?.data) {
+      setXColumns(columns.data);
+      setYColumns(columns.data);
+    }
+  }, [columns]);
+
+  useEffect(() => {
+    if (initialConfig) {
+      setConfig((prev) => ({
+        ...prev,
+        ...initialConfig,
+      }));
+    }
+  }, [initialConfig]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (
       config.title.trim() === "" ||
       config.xAxis.trim() === "" ||
@@ -66,13 +82,33 @@ export const WidgetForm = ({
       toast.error("X-Axis and Y-Axis cannot be the same");
       return;
     }
-    onSave(config);
+
+    const payload = {
+      xColumn: config.xAxis,
+      yColumn: config.yAxis,
+    };
+
+    try {
+      const response = await saveWidget(payload).unwrap();
+      toast.success("Widget saved successfully!");
+
+      // Create updated config with the response data
+      const updatedConfig = {
+        ...config,
+        data: response?.data || [],
+      };
+
+      // Pass the updated config with data to parent
+      onSave(updatedConfig);
+    } catch (error) {
+      console.error("Error saving widget:", error);
+      toast.error("Failed to save widget");
+    } finally {
+      onCancel();
+    }
   };
 
   const handleSwapAxis = () => {
-    const tempX = [...xColumns];
-    setXColumns(yColumns);
-    setYColumns(tempX);
     setConfig((prev) => ({
       ...prev,
       xAxis: prev.yAxis,
@@ -90,6 +126,7 @@ export const WidgetForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-6">
+      {/* Title */}
       <div className="space-y-2">
         <Label htmlFor="title">Title</Label>
         <Input
@@ -100,6 +137,7 @@ export const WidgetForm = ({
         />
       </div>
 
+      {/* Description */}
       <div className="space-y-2">
         <Label htmlFor="description">Description (Optional)</Label>
         <Input
@@ -112,6 +150,7 @@ export const WidgetForm = ({
         />
       </div>
 
+      {/* Chart Type */}
       <div className="space-y-2">
         <Label htmlFor="chartType">Chart Type</Label>
         <Select
@@ -121,7 +160,7 @@ export const WidgetForm = ({
           }
         >
           <SelectTrigger id="chartType">
-            <SelectValue />
+            <SelectValue placeholder="Select Chart Type" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="bar">Bar Chart</SelectItem>
@@ -133,26 +172,23 @@ export const WidgetForm = ({
         </Select>
       </div>
 
-      <div className=" gap-4 flex items-end w-full">
+      {/* X & Y Axis */}
+      <div className="gap-4 flex items-end w-full">
+        {/* X Axis */}
         <div className="space-y-2 w-full">
           <Label htmlFor="xAxis">X-Axis</Label>
-          {/* <Input
-            id="xAxis"
-            value={config.xAxis}
-            onChange={(e) => setConfig({ ...config, xAxis: e.target.value })}
-            placeholder="X-Axis Name"
-          /> */}
           <Select
+            key={`xAxis-${config.xAxis}`}
             value={config.xAxis}
-            onValueChange={(value: ChartType) => {
-              setConfig({ ...config, xAxis: value });
-            }}
+            onValueChange={(value: string) =>
+              setConfig({ ...config, xAxis: value })
+            }
           >
             <SelectTrigger id="xAxis">
-              <SelectValue />
+              <SelectValue placeholder="Select X-Axis" />
             </SelectTrigger>
             <SelectContent>
-              {xColumns?.map((col) => (
+              {xColumns.map((col) => (
                 <SelectItem key={col} value={col}>
                   {col}
                 </SelectItem>
@@ -160,30 +196,28 @@ export const WidgetForm = ({
             </SelectContent>
           </Select>
         </div>
+
         <div className="space-y-2">
-          <Button type="button" onClick={() => handleSwapAxis()}>
+          <Button type="button" onClick={handleSwapAxis}>
             <ArrowLeftRight />
           </Button>
         </div>
+
+        {/* Y Axis */}
         <div className="space-y-2 w-full">
           <Label htmlFor="yAxis">Y-Axis</Label>
-          {/* <Input
-            id="yAxis"
-            value={config.yAxis}
-            onChange={(e) => setConfig({ ...config, yAxis: e.target.value })}
-            placeholder="Y-Axis Name"
-          /> */}
           <Select
+            key={`yAxis-${config.yAxis}`}
             value={config.yAxis}
-            onValueChange={(value: ChartType) => {
-              setConfig({ ...config, yAxis: value });
-            }}
+            onValueChange={(value: string) =>
+              setConfig({ ...config, yAxis: value })
+            }
           >
             <SelectTrigger id="yAxis">
-              <SelectValue />
+              <SelectValue placeholder="Select Y-Axis" />
             </SelectTrigger>
             <SelectContent>
-              {yColumns?.map((col) => (
+              {yColumns.map((col) => (
                 <SelectItem key={col} value={col}>
                   {col}
                 </SelectItem>
@@ -193,6 +227,7 @@ export const WidgetForm = ({
         </div>
       </div>
 
+      {/* Axis Labels */}
       <div className="gap-4 flex items-end w-full">
         <div className="space-y-2 w-full">
           <Label htmlFor="xAxisLabel">X-Axis Label (Optional)</Label>
@@ -206,7 +241,7 @@ export const WidgetForm = ({
           />
         </div>
         <div className="space-y-2">
-          <Button type="button" onClick={() => handleSwapColumnLabel()}>
+          <Button type="button" onClick={handleSwapColumnLabel}>
             <ArrowLeftRight />
           </Button>
         </div>
@@ -223,6 +258,7 @@ export const WidgetForm = ({
         </div>
       </div>
 
+      {/* Options */}
       <div className="flex items-center justify-between">
         <Label htmlFor="showLegend">Show Legend</Label>
         <Switch
@@ -245,9 +281,10 @@ export const WidgetForm = ({
         />
       </div>
 
+      {/* Buttons */}
       <div className="flex gap-2 pt-4">
-        <Button type="submit" className="flex-1">
-          Save Widget
+        <Button type="submit" className="flex-1" disabled={isLoading}>
+          {isLoading ? "Saving..." : "Save Widget"}
         </Button>
         <Button
           type="button"

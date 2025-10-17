@@ -13,6 +13,7 @@ export interface ChartConfig {
   colorPalette: string[];
   dataSeriesSettings?: any;
   tooltipSettings?: any;
+  data?: any;
 }
 
 export interface Widget {

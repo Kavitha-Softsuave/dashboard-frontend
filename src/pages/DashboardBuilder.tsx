@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useGetWidgetColumnsQuery } from "@/store/api";
 import {
   setCurrentDashboard,
   updateDashboardLayout,
@@ -43,6 +44,10 @@ const DashboardBuilder = () => {
   const [editingWidget, setEditingWidget] = useState<Widget | null>(null);
   const [editingWidgetId, setEditingWidgetId] = useState<string | null>(null);
   const [draggedWidgetId, setDraggedWidgetId] = useState<string | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  // Fetch widget columns data when component mounts
+  const { data: columnsData, isLoading, error } = useGetWidgetColumnsQuery();
 
   useEffect(() => {
     if (!currentDashboard) {
@@ -120,7 +125,6 @@ const DashboardBuilder = () => {
     };
 
     dispatch(addWidgetToDashboard(newDashboardWidget));
-    // handleEditWidget(widgets.find((w) => w.id === widgetId)!);
     toast.success("Widget added to dashboard");
   };
 
@@ -167,26 +171,26 @@ const DashboardBuilder = () => {
     toast.success("Dashboard saved successfully");
     setIsWidgetListOpen(false);
     setIsEditDashboard(false);
-    // navigate("/");
   };
 
   const handleEditWidget = (widget: Widget) => {
     setEditingWidgetId(widget.id);
     setEditingWidget(widget);
     setIsEditSheetOpen(true);
+    setIsEditMode(true);
   };
 
   const handleAddNew = () => {
     setEditingWidget(null);
+    setIsEditMode(false);
     setIsEditSheetOpen(true);
   };
+
   const handleDeleteWidget = (widgetId: string) => {
     if (!currentDashboard) return;
 
-    // Dispatch action to remove widget from current dashboard
     dispatch(removeWidgetFromDashboard(widgetId));
 
-    // If the widget being edited was deleted, close the edit sheet and clear the editing id
     if (editingWidgetId === widgetId) {
       setIsEditSheetOpen(false);
       setEditingWidgetId(null);
@@ -225,9 +229,6 @@ const DashboardBuilder = () => {
       <div className="border-b bg-card">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
-            {/* <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button> */}
             <h1 className="text-2xl font-bold">Dashboard</h1>
           </div>
           <div className="flex gap-2 items-center">
@@ -247,7 +248,6 @@ const DashboardBuilder = () => {
               variant="outline"
               onClick={() => setIsWidgetListOpen(!isWidgetListOpen)}
             >
-              {/* {isWidgetListOpen ? "Hide" : "Show"}  */}
               Add Widgets
             </Button>
             <Button onClick={handleSaveDashboard}>
@@ -261,18 +261,20 @@ const DashboardBuilder = () => {
       <div className="flex h-[calc(100vh-73px)]">
         {/* Widget List Sidebar */}
         {isWidgetListOpen && isEditDashboard && (
-          <div className="w-80 border-r bg-card p-4 overflow-y-auto flex flex-col">
+          <div className="w-80 border-r bg-card pt-4 overflow-y-auto flex flex-col">
             <div className="flex justify-between">
-              <h2 className="text-lg font-semibold mb-4">Available Widgets</h2>
+              <h2 className="text-lg font-semibold mb-4 pl-3">
+                Available Widgets
+              </h2>
               <X
-                className="cursor-pointer"
+                className="cursor-pointer mr-2"
                 onClick={() => setIsWidgetListOpen(false)}
               />
             </div>
             <div className="flex flex-col justify-between h-full overflow-hidden">
               <div className="">
                 {widgets.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm pl-4 text-muted-foreground">
                     No widgets available
                   </p>
                 ) : (
@@ -307,9 +309,9 @@ const DashboardBuilder = () => {
                 )}
               </div>
               <div className="flex justify-center items-center gap-1">
-                <Button onClick={handleAddNew}>
+                <Button onClick={handleAddNew} disabled={isLoading}>
                   <Plus className="mr-2 h-4 w-4" />
-                  Add Widget
+                  {isLoading ? "Loading..." : "Add Widget"}
                 </Button>
                 <Button onClick={() => navigate("/widgets")}>
                   Manage Widgets
@@ -375,9 +377,19 @@ const DashboardBuilder = () => {
       <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
         <SheetContent className="w-full sm:max-w-md overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Edit Widget Configuration</SheetTitle>
+            <SheetTitle>
+              {isEditMode ? "Edit Widget Configuration" : "Create New Widget"}
+            </SheetTitle>
           </SheetHeader>
-          {
+          {isLoading ? (
+            <div className="flex items-center justify-center p-6">
+              <p className="text-muted-foreground">Loading columns...</p>
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center p-6">
+              <p className="text-destructive">Error loading columns data</p>
+            </div>
+          ) : (
             <WidgetForm
               initialConfig={
                 widgets.find((w) => w.id === editingWidgetId)?.config ||
@@ -388,8 +400,9 @@ const DashboardBuilder = () => {
                 setIsEditSheetOpen(false);
                 setEditingWidgetId(null);
               }}
+              columns = {columnsData}
             />
-          }
+          )}
         </SheetContent>
       </Sheet>
     </div>

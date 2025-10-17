@@ -27,88 +27,6 @@ interface WidgetPreviewProps {
   showEditButton?: boolean;
 }
 
-const SAMPLE_DATA = [
-  {
-    Sales: 5000,
-    Profit: 1200,
-    Quantity: 50,
-    Month: "Jan",
-    Region: "North",
-    Category: "Electronics",
-  },
-  {
-    Sales: 7000,
-    Profit: 2000,
-    Quantity: 70,
-    Month: "Feb",
-    Region: "South",
-    Category: "Clothing",
-  },
-  {
-    Sales: 6500,
-    Profit: 1500,
-    Quantity: 60,
-    Month: "Mar",
-    Region: "East",
-    Category: "Furniture",
-  },
-  {
-    Sales: 8000,
-    Profit: 2500,
-    Quantity: 80,
-    Month: "Apr",
-    Region: "West",
-    Category: "Electronics",
-  },
-  {
-    Sales: 7200,
-    Profit: 1800,
-    Quantity: 65,
-    Month: "May",
-    Region: "North",
-    Category: "Clothing",
-  },
-  {
-    Sales: 6000,
-    Profit: 1300,
-    Quantity: 55,
-    Month: "Jun",
-    Region: "South",
-    Category: "Furniture",
-  },
-  {
-    Sales: 9000,
-    Profit: 3000,
-    Quantity: 90,
-    Month: "Jul",
-    Region: "East",
-    Category: "Electronics",
-  },
-  {
-    Sales: 7500,
-    Profit: 2200,
-    Quantity: 75,
-    Month: "Aug",
-    Region: "West",
-    Category: "Clothing",
-  },
-  {
-    Sales: 6800,
-    Profit: 1600,
-    Quantity: 60,
-    Month: "Sep",
-    Region: "North",
-    Category: "Furniture",
-  },
-  {
-    Sales: 8200,
-    Profit: 2400,
-    Quantity: 85,
-    Month: "Oct",
-    Region: "South",
-    Category: "Electronics",
-  },
-];
 export const WidgetPreview = ({
   widget,
   onEdit,
@@ -118,7 +36,7 @@ export const WidgetPreview = ({
   const { config } = widget;
 
   const renderChart = () => {
-    const filteredData = SAMPLE_DATA.map((d) => {
+    const filteredData = widget.config?.data.map((d) => {
       return {
         [config.xAxis]: d[config.xAxis],
         [config.yAxis]: d[config.yAxis],
