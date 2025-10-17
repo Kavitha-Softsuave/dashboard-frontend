@@ -19,12 +19,15 @@ export const widgetApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "https://tkt8nkkb-5000.inc1.devtunnels.ms/api/",
   }),
-  tagTypes: ["Widget"], // ✅ Add this to fix invalidatesTags related issue
+  tagTypes: ["wig"],
 
   endpoints: (builder) => ({
     getWidgetColumns: builder.query<ColumnData, void>({
-      query: () => "get-columns",
-      providesTags: ["Widget"], // ✅ Optional but recommended
+      query: () => ({
+        url: "get-columns",
+        method: "GET",
+      }),
+      providesTags: ["wig"],
     }),
 
     saveWidget: builder.mutation<any, SaveWidgetPayload>({
@@ -33,7 +36,7 @@ export const widgetApi = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Widget"], // ✅ Tells RTK Query to re-fetch columns if needed
+      invalidatesTags: ["wig"],
     }),
   }),
 });

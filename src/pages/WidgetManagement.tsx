@@ -16,6 +16,7 @@ import { WidgetPreview } from "@/components/WidgetPreview";
 import { Card } from "@/components/ui/card";
 import { Edit, Trash2, Plus, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { useGetWidgetColumnsQuery } from "@/services/widgetApi";
 
 const WidgetManagement = () => {
   const navigate = useNavigate();
@@ -23,6 +24,8 @@ const WidgetManagement = () => {
   const widgets = useAppSelector((state) => state.widgets.widgets);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [editingWidget, setEditingWidget] = useState<Widget | null>(null);
+
+  const { data: columnsData, isLoading, error } = useGetWidgetColumnsQuery();
 
   const handleSaveWidget = (config: any) => {
     if (editingWidget) {
@@ -135,6 +138,7 @@ const WidgetManagement = () => {
               setIsSheetOpen(false);
               setEditingWidget(null);
             }}
+            columns={columnsData}
           />
         </SheetContent>
       </Sheet>

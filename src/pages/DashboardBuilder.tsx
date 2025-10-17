@@ -308,7 +308,7 @@ const DashboardBuilder = () => {
                   </div>
                 )}
               </div>
-              <div className="flex justify-center items-center gap-1">
+              <div className="flex justify-center items-center gap-1 mb-3">
                 <Button onClick={handleAddNew} disabled={isLoading}>
                   <Plus className="mr-2 h-4 w-4" />
                   {isLoading ? "Loading..." : "Add Widget"}
@@ -400,7 +400,7 @@ const DashboardBuilder = () => {
                 setIsEditSheetOpen(false);
                 setEditingWidgetId(null);
               }}
-              columns = {columnsData}
+              columns={columnsData}
             />
           )}
         </SheetContent>

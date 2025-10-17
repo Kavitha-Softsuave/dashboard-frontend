@@ -24,9 +24,11 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    (getDefaultMiddleware({
-      serializableCheck: false,
-    }) as any).concat(widgetApi.middleware),
+    (
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }) as any
+    ).concat(widgetApi.middleware),
 });
 
 export const persistor = persistStore(store);

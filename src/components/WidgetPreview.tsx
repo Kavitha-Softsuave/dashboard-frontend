@@ -38,8 +38,8 @@ export const WidgetPreview = ({
   const renderChart = () => {
     const filteredData = widget.config?.data.map((d) => {
       return {
-        [config.xAxis]: d[config.xAxis],
-        [config.yAxis]: d[config.yAxis],
+        [config.xAxis]: d.xAxis,
+        [config.yAxis]: d.yAxis,
       };
     });
 
