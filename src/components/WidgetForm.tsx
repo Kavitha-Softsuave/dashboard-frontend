@@ -89,39 +89,38 @@ export const WidgetForm = ({
     };
 
     try {
-      // const response = await saveWidget(payload).unwrap();
-      const response = await fetch(
-        "https://tkt8nkkb-5000.inc1.devtunnels.ms/api/get-data-by-columns",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const response = await saveWidget(payload).unwrap();
+      // const response = await fetch(
+      //   "https://tkt8nkkb-5000.inc1.devtunnels.ms/api/get-data-by-columns",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify(payload),
+      //   }
+      // );
       toast.success("Widget saved successfully!");
 
-      const responseData = await response.json();
+      // const responseData = await response.json();
 
-      if (!response.ok) {
-        // handle API errors
-        toast.error(responseData.message || "Failed to fetch data");
-        return;
-      }
+      // if (!response.ok) {
+      //   // handle API errors
+      //   toast.error(responseData.message || "Failed to fetch data");
+      //   return;
+      // }
       // Create updated config with the response data
       const updatedConfig = {
         ...config,
-        data: responseData?.data || [],
+        data: response?.data || [],
       };
 
       // Pass the updated config with data to parent
       onSave(updatedConfig);
+      onCancel();
     } catch (error) {
       console.error("Error saving widget:", error);
       toast.error("Failed to save widget");
-    } finally {
-      onCancel();
     }
   };
 

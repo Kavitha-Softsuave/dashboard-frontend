@@ -4,7 +4,8 @@ import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 import widgetReducer from "./widgetSlice";
 import dashboardReducer from "./dashboardSlice";
-import { widgetApi } from "@/services/widgetApi";
+import { widgetApi } from "./api";
+// import { widgetApi } from "@/services/widgetApi";
 
 const rootReducer = combineReducers({
   widgets: widgetReducer,

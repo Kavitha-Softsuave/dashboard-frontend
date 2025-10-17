@@ -36,7 +36,6 @@ export const widgetApi = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["wig"],
     }),
   }),
 });

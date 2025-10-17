@@ -16,7 +16,7 @@ import { WidgetPreview } from "@/components/WidgetPreview";
 import { Card } from "@/components/ui/card";
 import { Edit, Trash2, Plus, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { useGetWidgetColumnsQuery } from "@/services/widgetApi";
+import { useGetWidgetColumnsQuery } from "@/store/api";
 
 const WidgetManagement = () => {
   const navigate = useNavigate();
