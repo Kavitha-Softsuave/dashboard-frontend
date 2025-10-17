@@ -126,8 +126,8 @@ export const WidgetPreview = ({
     });
 
     const commonProps = {
-      data: filteredData,
-      margin: { top: 10, right: 30, left: 0, bottom: 0 },
+      data: SAMPLE_DATA,
+      margin: { top: 20, right: 30, left: 20, bottom: config.showLegend ? 40 : 20 },
     };
 
     const xAxisProps = {

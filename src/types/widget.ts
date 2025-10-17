@@ -11,8 +11,9 @@ export interface ChartConfig {
   xAxisLabel?: string;
   yAxisLabel?: string;
   colorPalette: string[];
-  dataSeriesSettings?: any;
-  tooltipSettings?: any;
+  stringColumns?: string[];
+  numericColumns?: string[];
+  fileId?: string;
 }
 
 export interface Widget {
@@ -22,7 +23,7 @@ export interface Widget {
 }
 
 export interface DashboardWidget {
-  i: string; // widget id
+  i: string;
   x: number;
   y: number;
   w: number;

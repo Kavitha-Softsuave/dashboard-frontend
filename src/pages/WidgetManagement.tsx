@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -121,7 +122,7 @@ const WidgetManagement = () => {
       </div>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto overflow-auto custom-scrollbar">
           <SheetHeader>
             <SheetTitle>
               {editingWidget ? "Edit Widget" : "Create Widget"}

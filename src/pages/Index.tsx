@@ -76,7 +76,7 @@ const Index = () => {
       {/* Dashboard Preview */}
       <div
         ref={containerRef}
-        className="flex-1 p-6 overflow-auto bg-muted/20"
+        className="flex-1 p-6 bg-muted/20"
       >
         <GridLayout
           className="layout"

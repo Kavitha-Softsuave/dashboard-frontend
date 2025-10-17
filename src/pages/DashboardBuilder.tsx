@@ -43,6 +43,10 @@ const DashboardBuilder = () => {
   const [editingWidget, setEditingWidget] = useState<Widget | null>(null);
   const [editingWidgetId, setEditingWidgetId] = useState<string | null>(null);
   const [draggedWidgetId, setDraggedWidgetId] = useState<string | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  console.log("isEditDashboard", isEditDashboard);
+  console.log("isWidgetOpen", isWidgetListOpen);
 
   useEffect(() => {
     if (!currentDashboard) {
@@ -173,11 +177,13 @@ const DashboardBuilder = () => {
   const handleEditWidget = (widget: Widget) => {
     setEditingWidgetId(widget.id);
     setEditingWidget(widget);
+    setIsEditMode(true);
     setIsEditSheetOpen(true);
   };
 
   const handleAddNew = () => {
     setEditingWidget(null);
+    setIsEditMode(false);
     setIsEditSheetOpen(true);
   };
   const handleDeleteWidget = (widgetId: string) => {
@@ -230,9 +236,23 @@ const DashboardBuilder = () => {
             </Button> */}
             <h1 className="text-2xl font-bold">Dashboard</h1>
           </div>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center p-2">
+            {isEditDashboard && (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsWidgetListOpen(!isWidgetListOpen)}
+                >
+                  Add Widgets
+                </Button>
+                <Button onClick={handleSaveDashboard}>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save
+                </Button>
+              </>
+            )}
             <div className="flex items-center gap-1">
-              Edit{" "}
+              Edit
               <Switch
                 checked={isEditDashboard}
                 onCheckedChange={(checked: boolean) => {
@@ -243,17 +263,6 @@ const DashboardBuilder = () => {
                 }}
               />
             </div>
-            <Button
-              variant="outline"
-              onClick={() => setIsWidgetListOpen(!isWidgetListOpen)}
-            >
-              {/* {isWidgetListOpen ? "Hide" : "Show"}  */}
-              Add Widgets
-            </Button>
-            <Button onClick={handleSaveDashboard}>
-              <Save className="mr-2 h-4 w-4" />
-              Save
-            </Button>
           </div>
         </div>
       </div>
@@ -261,9 +270,11 @@ const DashboardBuilder = () => {
       <div className="flex h-[calc(100vh-73px)]">
         {/* Widget List Sidebar */}
         {isWidgetListOpen && isEditDashboard && (
-          <div className="w-80 border-r bg-card p-4 overflow-y-auto flex flex-col">
+          <div className="w-80 border-r bg-card pl-2 overflow-y-auto flex flex-col overflow-auto custom-scrollbar h-[calc(100vh-200px)]">
             <div className="flex justify-between">
-              <h2 className="text-lg font-semibold mb-4">Available Widgets</h2>
+              <h2 className="text-lg font-semibold mb-4 pl-3">
+                Available Widgets
+              </h2>
               <X
                 className="cursor-pointer"
                 onClick={() => setIsWidgetListOpen(false)}
@@ -272,7 +283,7 @@ const DashboardBuilder = () => {
             <div className="flex flex-col justify-between h-full overflow-hidden">
               <div className="">
                 {widgets.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm pl-3 text-muted-foreground">
                     No widgets available
                   </p>
                 ) : (
@@ -298,7 +309,7 @@ const DashboardBuilder = () => {
                         </div>
                         <p className="text-xs text-muted-foreground">
                           {widget.config.chartType.charAt(0).toUpperCase() +
-                            widget.config.chartType.slice(1)}{" "}
+                            widget.config.chartType.slice(1)}
                           Chart
                         </p>
                       </Card>
@@ -322,7 +333,7 @@ const DashboardBuilder = () => {
         {/* Dashboard Canvas */}
         <div
           ref={dashboardRef}
-          className="flex-1 p-6 overflow-auto bg-muted/20"
+          className="flex-1 p-6 overflow-auto bg-muted/20 custom-scrollbar"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
         >
@@ -373,9 +384,11 @@ const DashboardBuilder = () => {
 
       {/* Edit Widget Sheet */}
       <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
-        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto overflow-auto custom-scrollbar">
           <SheetHeader>
-            <SheetTitle>Edit Widget Configuration</SheetTitle>
+            <SheetTitle>
+              {isEditMode ? "Edit Widget Configuration" : "Create New Widget"}
+            </SheetTitle>
           </SheetHeader>
           {
             <WidgetForm
@@ -388,6 +401,7 @@ const DashboardBuilder = () => {
                 setIsEditSheetOpen(false);
                 setEditingWidgetId(null);
               }}
+              isEditMode={isEditMode}
             />
           }
         </SheetContent>
