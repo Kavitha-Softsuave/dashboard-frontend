@@ -3,7 +3,7 @@ export type ChartType = "bar" | "line" | "pie" | "area" | "scatter";
 export interface ChartConfig {
   xAxis: string;
   yAxis: string;
-  chartType: ChartType;
+  chartType: string;
   title: string;
   description?: string;
   showLegend: boolean;
@@ -14,6 +14,7 @@ export interface ChartConfig {
   dataSeriesSettings?: any;
   tooltipSettings?: any;
   data?: any;
+  type?: string;
 }
 
 export interface Widget {

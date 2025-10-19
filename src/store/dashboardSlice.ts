@@ -3,15 +3,20 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Dashboard, DashboardWidget } from '@/types/widget';
 
 interface DashboardState {
-  columns: any;
+  columns?: any;
   dashboards: Dashboard[];
   currentDashboard: Dashboard | null;
 }
 
+const dashboards =
+  typeof window !== 'undefined'
+    ? JSON.parse(localStorage.getItem('dashboards') || '[]')
+    : [];
+
 const initialState: DashboardState = {
-  dashboards: JSON.parse(localStorage.getItem('dashboards') || '[]'),
+  dashboards,
   currentDashboard: null,
-  columns: undefined
+  columns: undefined,
 };
 
 const dashboardSlice = createSlice({
@@ -20,32 +25,44 @@ const dashboardSlice = createSlice({
   reducers: {
     setCurrentDashboard: (state, action: PayloadAction<Dashboard>) => {
       state.currentDashboard = action.payload;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('currentDashboardId', action.payload.id);
+      }
     },
+
     updateDashboardLayout: (state, action: PayloadAction<DashboardWidget[]>) => {
       if (state.currentDashboard) {
         state.currentDashboard.widgets = action.payload;
       }
     },
+
     saveDashboard: (state) => {
       if (state.currentDashboard) {
-        const index = state.dashboards.findIndex(d => d.id === state.currentDashboard!.id);
+        const index = state.dashboards.findIndex(
+          (d) => d.id === state.currentDashboard!.id
+        );
         if (index !== -1) {
           state.dashboards[index] = state.currentDashboard;
         } else {
           state.dashboards.push(state.currentDashboard);
         }
-        localStorage.setItem('dashboards', JSON.stringify(state.dashboards));
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('dashboards', JSON.stringify(state.dashboards));
+        }
       }
     },
+
     addWidgetToDashboard: (state, action: PayloadAction<DashboardWidget>) => {
       if (state.currentDashboard) {
+        state.currentDashboard.widgets = state.currentDashboard.widgets || [];
         state.currentDashboard.widgets.push(action.payload);
       }
     },
+
     removeWidgetFromDashboard: (state, action: PayloadAction<string>) => {
       if (state.currentDashboard) {
         state.currentDashboard.widgets = state.currentDashboard.widgets.filter(
-          w => w.i !== action.payload
+          (w) => w.i !== action.payload
         );
       }
     },
@@ -59,4 +76,5 @@ export const {
   addWidgetToDashboard,
   removeWidgetFromDashboard,
 } = dashboardSlice.actions;
+
 export default dashboardSlice.reducer;

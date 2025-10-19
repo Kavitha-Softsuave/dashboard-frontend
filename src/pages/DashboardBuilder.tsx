@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sheet";
 import { WidgetPreview } from "@/components/WidgetPreview";
 import { WidgetForm } from "@/components/WidgetForm";
-import { ArrowLeft, Plus, Save, X } from "lucide-react";
+import { ArrowLeft, Menu, Plus, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import GridLayout, { Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
@@ -30,6 +30,7 @@ import { addWidget, updateWidget } from "@/store/widgetSlice";
 import { useResizeObserver } from "@/hooks/use-resize";
 import { Toggle } from "@/components/ui/toggle";
 import { Switch } from "@/components/ui/switch";
+import { CHART_TYPES } from "@/constants/constants";
 
 const DashboardBuilder = () => {
   const navigate = useNavigate();
@@ -104,28 +105,42 @@ const DashboardBuilder = () => {
     return { x: 0, y: maxY };
   };
 
-  const handleAddWidget = (widgetId: string) => {
+  const [widgetCounter, setWidgetCounter] = useState(0);
+
+  const handleAddWidget = (chartType: string) => {
     if (!currentDashboard) return;
 
-    const existsInDashboard = currentDashboard.widgets.some(
-      (w) => w.i === widgetId
-    );
-    if (existsInDashboard) {
-      toast.error("Widget already exists in dashboard");
-      return;
-    }
+    const newId = `${chartType}-${widgetCounter}`;
+    setWidgetCounter((prev) => prev + 1);
 
     const { x, y } = calculateNextPosition();
     const newDashboardWidget: DashboardWidget = {
-      i: widgetId,
+      i: newId,
       x,
       y,
       w: 4,
       h: 4,
     };
 
+    const newWidget: Widget = {
+      id: newId,
+      config: {
+        title: `${chartType} Widget ${widgetCounter + 1}`,
+        type: chartType,
+        data: [],
+        xAxis: "",
+        yAxis: "",
+        chartType: chartType,
+        showLegend: false,
+        showGrid: false,
+        colorPalette: [],
+      },
+      createdAt: new Date().toISOString(),
+    };
+
+    dispatch(addWidget(newWidget));
     dispatch(addWidgetToDashboard(newDashboardWidget));
-    toast.success("Widget added to dashboard");
+    toast.success(`${chartType} widget added`);
   };
 
   const handleLayoutChange = (layout: Layout[]) => {
@@ -227,45 +242,60 @@ const DashboardBuilder = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b bg-card">
-        <div className="flex items-center justify-between p-4">
+        <div className="flex items-center justify-between p-4 min-h-[72px]">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold">Dashboard</h1>
+            <h1
+              className={`text-2xl font-bold transition-all duration-300 ${
+                isEditDashboard && !isWidgetListOpen ? "ml-11" : "ml-0"
+              }`}
+            >
+              Dashboard
+            </h1>{" "}
           </div>
           <div className="flex gap-2 items-center">
+            {isEditDashboard && (
+              <>
+                {/* <Button
+                  variant="outline"
+                  onClick={() => setIsWidgetListOpen(!isWidgetListOpen)}
+                >
+                  Add Widgets
+                </Button> */}
+                <Button onClick={handleSaveDashboard}>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save
+                </Button>
+              </>
+            )}
             <div className="flex items-center gap-1">
-              Edit{" "}
+              Edit
               <Switch
                 checked={isEditDashboard}
                 onCheckedChange={(checked: boolean) => {
-                  if (checked) {
-                    setIsWidgetListOpen(false);
-                  }
-                  setIsEditDashboard(!!checked);
+                  setIsEditDashboard(checked);
+                  setIsWidgetListOpen(checked);
                 }}
               />
             </div>
-            <Button
-              variant="outline"
-              onClick={() => setIsWidgetListOpen(!isWidgetListOpen)}
-            >
-              Add Widgets
-            </Button>
-            <Button onClick={handleSaveDashboard}>
-              <Save className="mr-2 h-4 w-4" />
-              Save
-            </Button>
           </div>
         </div>
       </div>
 
       <div className="flex h-[calc(100vh-73px)]">
         {/* Widget List Sidebar */}
+
+        {isEditDashboard && !isWidgetListOpen && (
+          <button
+            onClick={() => setIsWidgetListOpen(true)}
+            className="fixed top-4 left-4 z-50 p-2 bg-card border rounded-lg shadow-md hover:bg-accent transition-all"
+          >
+            <Menu className="h-5 w-5 text-foreground" />
+          </button>
+        )}
         {isWidgetListOpen && isEditDashboard && (
           <div className="w-80 border-r bg-card pt-4 overflow-y-auto flex flex-col">
             <div className="flex justify-between">
-              <h2 className="text-lg font-semibold mb-4 pl-3">
-                Available Widgets
-              </h2>
+              <h2 className="text-lg font-semibold mb-4 pl-3">Base Widgets</h2>
               <X
                 className="cursor-pointer mr-2"
                 onClick={() => setIsWidgetListOpen(false)}
@@ -273,42 +303,42 @@ const DashboardBuilder = () => {
             </div>
             <div className="flex flex-col justify-between h-full overflow-hidden">
               <div className="">
-                {widgets.length === 0 ? (
-                  <p className="text-sm pl-4 text-muted-foreground">
-                    No widgets available
-                  </p>
-                ) : (
-                  <div className="space-y-3 px-2 overflow-auto custom-scrollbar h-[calc(100vh-200px)] ">
-                    {widgets.map((widget) => (
-                      <Card
-                        key={widget.id}
-                        className="p-3 cursor-move hover:border-primary transition-colors"
-                        draggable
-                        onDragStart={() => handleDragStart(widget.id)}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-medium text-sm">
-                            {widget.config.title}
-                          </h3>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleAddWidget(widget.id)}
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {widget.config.chartType.charAt(0).toUpperCase() +
-                            widget.config.chartType.slice(1)}{" "}
-                          Chart
-                        </p>
-                      </Card>
-                    ))}
+                <div className="space-y-3 px-2 overflow-auto custom-scrollbar h-[calc(100vh-200px)] ">
+                  <div className="space-y-3">
+                    {CHART_TYPES.map((chartType) => {
+                      const IconComponent = chartType.icon;
+                      return (
+                        <Card
+                          key={chartType.type}
+                          draggable
+                          onDragStart={() => handleDragStart(chartType.type)}
+                          className="p-4 cursor-move hover:bg-accent/50 transition-all border-2 hover:border-primary/50 hover:shadow-md"
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2.5 rounded-lg bg-primary/10">
+                                <IconComponent className="h-7 w-7 text-primary" />
+                              </div>
+                              <span className="font-semibold text-foreground">
+                                {chartType.label}
+                              </span>
+                            </div>
+
+                            <button
+                              onClick={() => handleAddWidget(chartType.type)}
+                              className="p-2 hover:bg-primary/10 rounded-full transition"
+                            >
+                              <Plus className="h-5 w-5 text-primary" />
+                            </button>
+                          </div>
+                        </Card>
+                      );
+                    })}
                   </div>
-                )}
+                </div>
+                x
               </div>
-              <div className="flex justify-center items-center gap-1 mb-3">
+              {/* <div className="flex justify-center items-center gap-1 mb-3">
                 <Button onClick={handleAddNew} disabled={isLoading}>
                   <Plus className="mr-2 h-4 w-4" />
                   {isLoading ? "Loading..." : "Add Widget"}
@@ -316,7 +346,7 @@ const DashboardBuilder = () => {
                 <Button onClick={() => navigate("/widgets")}>
                   Manage Widgets
                 </Button>
-              </div>
+              </div> */}
             </div>
           </div>
         )}
