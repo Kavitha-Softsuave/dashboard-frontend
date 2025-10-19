@@ -1,35 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Widget } from '@/types/widget';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { IWidget } from "@/types/widget";
 
 interface WidgetState {
   widgetChartData: any;
-  widgets: Widget[];
+  widgets: IWidget[];
 }
 
 const initialState: WidgetState = {
-  widgets: JSON.parse(localStorage.getItem('widgets') || '[]'),
-  widgetChartData: undefined
+  widgets: JSON.parse(localStorage.getItem("widgets") || "[]"),
+  widgetChartData: undefined,
 };
 
 const widgetSlice = createSlice({
-  name: 'widgets',
+  name: "widgets",
   initialState,
   reducers: {
-    addWidget: (state, action: PayloadAction<Widget>) => {
-      state.widgets.push(action.payload); 
-      localStorage.setItem('widgets', JSON.stringify(state.widgets));
+    addWidget: (state, action: PayloadAction<IWidget>) => {
+      state.widgets.push(action.payload);
+      localStorage.setItem("widgets", JSON.stringify(state.widgets));
     },
-    updateWidget: (state, action: PayloadAction<Widget>) => {
-      const index = state.widgets.findIndex(w => w.id === action.payload.id);
+    updateWidget: (state, action: PayloadAction<IWidget>) => {
+      const index = state.widgets.findIndex((w) => w.id === action.payload.id);
       if (index !== -1) {
         state.widgets[index] = action.payload;
-        localStorage.setItem('widgets', JSON.stringify(state.widgets));
+        localStorage.setItem("widgets", JSON.stringify(state.widgets));
       }
     },
     deleteWidget: (state, action: PayloadAction<string>) => {
-      state.widgets = state.widgets.filter(w => w.id !== action.payload);
-      localStorage.setItem('widgets', JSON.stringify(state.widgets));
+      state.widgets = state.widgets.filter((w) => w.id !== action.payload);
+      localStorage.setItem("widgets", JSON.stringify(state.widgets));
     },
   },
 });

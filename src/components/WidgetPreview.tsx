@@ -1,4 +1,4 @@
-import { Widget } from "@/types/widget";
+import { IWidget } from "@/types/widget";
 import { Edit, Trash2 } from "lucide-react";
 import {
   BarChart,
@@ -21,7 +21,7 @@ import {
 } from "recharts";
 
 interface WidgetPreviewProps {
-  widget: Widget;
+  widget: IWidget;
   onEdit?: () => void;
   onDelete?: () => void;
   showEditButton?: boolean;

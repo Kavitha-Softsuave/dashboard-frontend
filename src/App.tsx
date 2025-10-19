@@ -5,12 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Provider } from "react-redux";
 import { persistor, store } from "./store/store";
-import Index from "./pages/Index";
 import WidgetManagement from "./pages/WidgetManagement";
 import DashboardBuilder from "./pages/DashboardBuilder";
 import NotFound from "./pages/NotFound";
-import UploadPage from "./pages/UploadPage";
 import { PersistGate } from "redux-persist/integration/react";
+import ViewFilePage from "./pages/ViewFilePage";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +25,7 @@ const App = () => (
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/widgets" element={<WidgetManagement />} />
               <Route path="/dashboard" element={<DashboardBuilder />} />
-              <Route path="/upload" element={<UploadPage />} />
+              <Route path="/view-file" element={<ViewFilePage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

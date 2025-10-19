@@ -1,13 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { useUploadFileMutation } from "@/store/api";
+import { useAppDispatch } from "@/store/hooks";
+import { updateFileId } from "@/store/userSlice";
 import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
-function UploadPage() {
+function UploadForm() {
   const [file, setFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef(null);
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const [uploadFile, { isLoading, isError, error, isSuccess }] =
+    useUploadFileMutation();
 
   const handleFile = (file) => {
     if (file && file.type === "text/csv") {
@@ -40,20 +45,36 @@ function UploadPage() {
     handleFile(selectedFile);
   };
 
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!file) {
+      toast.error("please select one csv file");
+    }
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await uploadFile(formData).unwrap();
+      if (response?.data) {
+        dispatch(updateFileId(response.data?.id));
+      }
+      toast.success("File uploaded successfully!");
+      setFile(null);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to upload file.");
+    }
+  };
+
   return (
-    <div className="">
-      <div className="flex items-center justify-between mb-6 bg-[#614b75] text-white">
-        <div className="flex items-center gap-4 p-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-3xl font-bold">Upload File</h1>
-        </div>
-      </div>
-      <div className="flex flex-col items-center justify-center h-[60vh] w-96 mx-auto">
+    <div className="w-full flex flex-col  items-center justify-between">
+      <form
+        onSubmit={handleFormSubmit}
+        className="flex flex-col items-center justify-center w-96 mx-auto"
+      >
         {/* Upload Container */}
         <div
-          className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-2xl w-96 h-64 cursor-pointer transition-all duration-300 ${
+          className={`relative flex flex-col items-center justify-center border-2 my-2 border-dashed rounded-2xl w-96 h-32 cursor-pointer transition-all duration-300 ${
             dragActive
               ? "border-blue-500 bg-blue-50"
               : "border-gray-400 bg-white"
@@ -79,16 +100,21 @@ function UploadPage() {
             </p>
           ) : (
             <div className="flex flex-col items-center break-all px-10">
-              <p className="text-green-600 font-semibold">
-                {file.name} uploaded successfully!
-              </p>
+              <p className="text-green-600 font-semibold">{file.name}</p>
             </div>
           )}
         </div>
-        <Button className="w-full my-2">Upload file</Button>
+        <Button type="submit" className="w-full my-2">
+          Upload file
+        </Button>
+      </form>
+      <div>
+        <p className="text-xs">
+          *You can upload only one file per dashboard at a time.
+        </p>
       </div>
     </div>
   );
 }
 
-export default UploadPage;
+export default UploadForm;

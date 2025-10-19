@@ -1,6 +1,6 @@
-export type ChartType = "bar" | "line" | "pie" | "area" | "scatter";
+export type IChartType = "bar" | "line" | "pie" | "area" | "scatter";
 
-export interface ChartConfig {
+export interface IChartConfig {
   xAxis: string;
   yAxis: string;
   chartType: string;
@@ -17,13 +17,13 @@ export interface ChartConfig {
   type?: string;
 }
 
-export interface Widget {
+export interface IWidget {
   id: string;
-  config: ChartConfig;
+  config: IChartConfig;
   createdAt: string;
 }
 
-export interface DashboardWidget {
+export interface IDashboardWidget {
   i: string; // widget id
   x: number;
   y: number;
@@ -31,9 +31,9 @@ export interface DashboardWidget {
   h: number;
 }
 
-export interface Dashboard {
+export interface IDashboard {
   id: string;
   name: string;
-  widgets: DashboardWidget[];
+  widgets: IDashboardWidget[];
   createdAt: string;
 }

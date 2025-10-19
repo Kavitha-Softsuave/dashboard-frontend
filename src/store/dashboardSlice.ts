@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Dashboard, DashboardWidget } from '@/types/widget';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { IDashboard, IDashboardWidget } from "@/types/widget";
 
 interface DashboardState {
-  columns?: any;
-  dashboards: Dashboard[];
-  currentDashboard: Dashboard | null;
+  columns: any;
+  dashboards: IDashboard[];
+  currentDashboard: IDashboard | null;
 }
 
 const dashboards =
-  typeof window !== 'undefined'
-    ? JSON.parse(localStorage.getItem('dashboards') || '[]')
+  typeof window !== "undefined"
+    ? JSON.parse(localStorage.getItem("dashboards") || "[]")
     : [];
 
 const initialState: DashboardState = {
@@ -20,17 +20,20 @@ const initialState: DashboardState = {
 };
 
 const dashboardSlice = createSlice({
-  name: 'dashboards',
+  name: "dashboards",
   initialState,
   reducers: {
-    setCurrentDashboard: (state, action: PayloadAction<Dashboard>) => {
+    setCurrentDashboard: (state, action: PayloadAction<IDashboard>) => {
       state.currentDashboard = action.payload;
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('currentDashboardId', action.payload.id);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("currentDashboardId", action.payload.id);
       }
     },
 
-    updateDashboardLayout: (state, action: PayloadAction<DashboardWidget[]>) => {
+    updateDashboardLayout: (
+      state,
+      action: PayloadAction<IDashboardWidget[]>
+    ) => {
       if (state.currentDashboard) {
         state.currentDashboard.widgets = action.payload;
       }
@@ -46,13 +49,13 @@ const dashboardSlice = createSlice({
         } else {
           state.dashboards.push(state.currentDashboard);
         }
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('dashboards', JSON.stringify(state.dashboards));
+        if (typeof window !== "undefined") {
+          localStorage.setItem("dashboards", JSON.stringify(state.dashboards));
         }
       }
     },
 
-    addWidgetToDashboard: (state, action: PayloadAction<DashboardWidget>) => {
+    addWidgetToDashboard: (state, action: PayloadAction<IDashboardWidget>) => {
       if (state.currentDashboard) {
         state.currentDashboard.widgets = state.currentDashboard.widgets || [];
         state.currentDashboard.widgets.push(action.payload);

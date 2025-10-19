@@ -10,7 +10,7 @@ import {
   addWidgetToDashboard,
   removeWidgetFromDashboard,
 } from "@/store/dashboardSlice";
-import { Dashboard, DashboardWidget, Widget } from "@/types/widget";
+import { IDashboard, IDashboardWidget, IWidget } from "@/types/widget";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -31,28 +31,36 @@ import { useResizeObserver } from "@/hooks/use-resize";
 import { Toggle } from "@/components/ui/toggle";
 import { Switch } from "@/components/ui/switch";
 import { CHART_TYPES } from "@/constants/constants";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import UploadForm from "@/components/forms/UploadForm";
+import CustomTable from "@/components/forms/CustomTable";
+import DashboardWidgetPanel from "@/components/dashboard-widget-panal/DashboardWidgetPanal";
+
+const sampleData = [
+  { name: "John Doe", age: 28, country: "USA", role: "Developer" },
+  { name: "Alice Smith", age: 32, country: "UK", role: "Designer" },
+  { name: "Raj Patel", age: 25, country: "India", role: "Analyst" },
+];
 
 const DashboardBuilder = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const widgets = useAppSelector((state) => state.widgets.widgets);
+  const user = useAppSelector((state) => state.user);
   const currentDashboard = useAppSelector(
     (state) => state.dashboards.currentDashboard
   );
   const [isWidgetListOpen, setIsWidgetListOpen] = useState(true);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [isEditDashboard, setIsEditDashboard] = useState(false);
-  const [editingWidget, setEditingWidget] = useState<Widget | null>(null);
+  const [editingWidget, setEditingWidget] = useState<IWidget | null>(null);
   const [editingWidgetId, setEditingWidgetId] = useState<string | null>(null);
   const [draggedWidgetId, setDraggedWidgetId] = useState<string | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
 
-  // Fetch widget columns data when component mounts
-  const { data: columnsData, isLoading, error } = useGetWidgetColumnsQuery();
-
   useEffect(() => {
     if (!currentDashboard) {
-      const newDashboard: Dashboard = {
+      const newDashboard: IDashboard = {
         id: Date.now().toString(),
         name: "New Dashboard",
         widgets: [],
@@ -114,7 +122,7 @@ const DashboardBuilder = () => {
     setWidgetCounter((prev) => prev + 1);
 
     const { x, y } = calculateNextPosition();
-    const newDashboardWidget: DashboardWidget = {
+    const newDashboardWidget: IDashboardWidget = {
       i: newId,
       x,
       y,
@@ -122,7 +130,7 @@ const DashboardBuilder = () => {
       h: 4,
     };
 
-    const newWidget: Widget = {
+    const newWidget: IWidget = {
       id: newId,
       config: {
         title: `${chartType} Widget ${widgetCounter + 1}`,
@@ -146,7 +154,7 @@ const DashboardBuilder = () => {
   const handleLayoutChange = (layout: Layout[]) => {
     if (!currentDashboard) return;
 
-    const updatedWidgets: DashboardWidget[] = layout.map((item) => ({
+    const updatedWidgets: IDashboardWidget[] = layout.map((item) => ({
       i: item.i,
       x: item.x,
       y: item.y,
@@ -169,7 +177,7 @@ const DashboardBuilder = () => {
         toast.error("A widget with this title already exists");
         return;
       }
-      const newWidget: Widget = {
+      const newWidget: IWidget = {
         id: Date.now().toString(),
         config,
         createdAt: new Date().toISOString(),
@@ -188,7 +196,7 @@ const DashboardBuilder = () => {
     setIsEditDashboard(false);
   };
 
-  const handleEditWidget = (widget: Widget) => {
+  const handleEditWidget = (widget: IWidget) => {
     setEditingWidgetId(widget.id);
     setEditingWidget(widget);
     setIsEditSheetOpen(true);
@@ -267,6 +275,9 @@ const DashboardBuilder = () => {
                 </Button>
               </>
             )}
+            <Button variant="outline" onClick={() => navigate("/view-file")}>
+              View Data
+            </Button>
             <div className="flex items-center gap-1">
               Edit
               <Switch
@@ -341,7 +352,7 @@ const DashboardBuilder = () => {
               {/* <div className="flex justify-center items-center gap-1 mb-3">
                 <Button onClick={handleAddNew} disabled={isLoading}>
                   <Plus className="mr-2 h-4 w-4" />
-                  {isLoading ? "Loading..." : "Add Widget"}
+                  Add Widget
                 </Button>
                 <Button onClick={() => navigate("/widgets")}>
                   Manage Widgets
@@ -405,36 +416,31 @@ const DashboardBuilder = () => {
 
       {/* Edit Widget Sheet */}
       <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
-        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+        <SheetContent className="w-full sm:max-w-full overflow-y-auto">
           <SheetHeader>
             <SheetTitle>
               {isEditMode ? "Edit Widget Configuration" : "Create New Widget"}
             </SheetTitle>
           </SheetHeader>
-          {isLoading ? (
-            <div className="flex items-center justify-center p-6">
-              <p className="text-muted-foreground">Loading columns...</p>
-            </div>
-          ) : error ? (
-            <div className="flex items-center justify-center p-6">
-              <p className="text-destructive">Error loading columns data</p>
-            </div>
-          ) : (
-            <WidgetForm
-              initialConfig={
-                widgets.find((w) => w.id === editingWidgetId)?.config ||
-                editingWidget?.config
-              }
-              onSave={handleSaveWidget}
-              onCancel={() => {
-                setIsEditSheetOpen(false);
-                setEditingWidgetId(null);
-              }}
-              columns={columnsData}
-            />
-          )}
+          <DashboardWidgetPanel
+            initialConfig={
+              widgets.find((w) => w.id === editingWidgetId)?.config ||
+              editingWidget?.config
+            }
+            onSave={handleSaveWidget}
+            onCancel={() => {
+              setIsEditSheetOpen(false);
+              setEditingWidgetId(null);
+            }}
+          />
         </SheetContent>
       </Sheet>
+      <Dialog open={!user?.fileId?.length}>
+        <DialogContent hideCloseButton={true}>
+          <DialogTitle>Upload file for dashboard creation</DialogTitle>
+          <UploadForm />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

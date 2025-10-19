@@ -3,6 +3,7 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 import widgetReducer from "./widgetSlice";
+import userReducer from "./userSlice";
 import dashboardReducer from "./dashboardSlice";
 import { widgetApi } from "./api";
 // import { widgetApi } from "@/services/widgetApi";
@@ -10,6 +11,7 @@ import { widgetApi } from "./api";
 const rootReducer = combineReducers({
   widgets: widgetReducer,
   dashboards: dashboardReducer,
+  user: userReducer,
   [widgetApi.reducerPath]: widgetApi.reducer,
 });
 
@@ -17,7 +19,7 @@ const persistConfig = {
   key: "root",
   storage,
   version: 1,
-  whitelist: ["widgets", "dashboards"],
+  whitelist: ["widgets", "dashboards", "user"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addWidget, updateWidget, deleteWidget } from "@/store/widgetSlice";
-import { Widget } from "@/types/widget";
+import { IWidget } from "@/types/widget";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -17,15 +17,32 @@ import { Card } from "@/components/ui/card";
 import { Edit, Trash2, Plus, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useGetWidgetColumnsQuery } from "@/store/api";
+import {
+  FullSheet,
+  FullSheetContent,
+  FullSheetHeader,
+  FullSheetTitle,
+} from "@/components/ui/full-sheet";
+import CustomTable from "@/components/forms/CustomTable";
 
+const sampleData = [
+  { name: "John Doe", age: 28, country: "USA", role: "Developer" },
+  { name: "Alice Smith", age: 32, country: "UK", role: "Designer" },
+  { name: "Raj Patel", age: 25, country: "India", role: "Analyst" },
+];
 const WidgetManagement = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const widgets = useAppSelector((state) => state.widgets.widgets);
+  const user = useAppSelector((state) => state.user);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [editingWidget, setEditingWidget] = useState<Widget | null>(null);
+  const [editingWidget, setEditingWidget] = useState<IWidget | null>(null);
 
-  const { data: columnsData, isLoading, error } = useGetWidgetColumnsQuery();
+  const {
+    data: columnsData,
+    isLoading,
+    error,
+  } = useGetWidgetColumnsQuery({ id: user?.fileId });
 
   const handleSaveWidget = (config: any) => {
     if (editingWidget) {
@@ -39,7 +56,7 @@ const WidgetManagement = () => {
         toast.error("A widget with this title already exists");
         return;
       }
-      const newWidget: Widget = {
+      const newWidget: IWidget = {
         id: Date.now().toString(),
         config,
         createdAt: new Date().toISOString(),
@@ -51,7 +68,7 @@ const WidgetManagement = () => {
     setEditingWidget(null);
   };
 
-  const handleEdit = (widget: Widget) => {
+  const handleEdit = (widget: IWidget) => {
     setEditingWidget(widget);
     setIsSheetOpen(true);
   };
@@ -124,7 +141,7 @@ const WidgetManagement = () => {
         )}
       </div>
 
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+      {/* <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="w-full sm:max-w-md overflow-y-auto">
           <SheetHeader>
             <SheetTitle>
@@ -141,7 +158,39 @@ const WidgetManagement = () => {
             columns={columnsData}
           />
         </SheetContent>
-      </Sheet>
+      </Sheet> */}
+      <FullSheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <FullSheetContent
+          side="right"
+          className="w-full sm:max-w-full overflow-y-auto"
+        >
+          <FullSheetHeader>
+            <FullSheetTitle>
+              {editingWidget ? "Edit Widget" : "Create Widget"}
+            </FullSheetTitle>
+          </FullSheetHeader>
+          <div className="w-full flex">
+            <div className="flex-1 p-4 ">
+              <h1 className="mb-3 text-xl font-semibold text-foreground">
+                Employee Information Table
+              </h1>
+              <CustomTable
+                data={sampleData}
+                caption="Employee Information Table"
+              />
+            </div>
+            <WidgetForm
+              initialConfig={editingWidget?.config}
+              onSave={handleSaveWidget}
+              onCancel={() => {
+                setIsSheetOpen(false);
+                setEditingWidget(null);
+              }}
+              columns={columnsData}
+            />
+          </div>
+        </FullSheetContent>
+      </FullSheet>
     </div>
   );
 };

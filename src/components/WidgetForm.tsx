@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { ChartConfig, ChartType } from "@/types/widget";
+import { IChartConfig, IChartType } from "@/types/widget";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,10 +15,11 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { ArrowLeftRight } from "lucide-react";
 import { useSaveWidgetMutation } from "@/store/api";
+import { useAppSelector } from "@/store/hooks";
 
 interface WidgetFormProps {
-  initialConfig?: ChartConfig;
-  onSave: (config: ChartConfig) => void;
+  initialConfig?: IChartConfig;
+  onSave: (config: IChartConfig) => void;
   onCancel: () => void;
   columns?: any;
 }
@@ -33,10 +34,11 @@ export const WidgetForm = ({
 }: WidgetFormProps) => {
   const [xColumns, setXColumns] = useState<string[]>([]);
   const [yColumns, setYColumns] = useState<string[]>([]);
+  const user = useAppSelector((state) => state.user);
 
   const [saveWidget, { isLoading }] = useSaveWidgetMutation();
 
-  const [config, setConfig] = useState<ChartConfig>(
+  const [config, setConfig] = useState<IChartConfig>(
     initialConfig || {
       xAxis: "",
       yAxis: "",
@@ -86,30 +88,14 @@ export const WidgetForm = ({
     const payload = {
       xColumn: config.xAxis,
       yColumn: config.yAxis,
+      fileId: user?.fileId,
     };
 
     try {
       const response = await saveWidget(payload).unwrap();
-      // const response = await fetch(
-      //   "https://tkt8nkkb-5000.inc1.devtunnels.ms/api/get-data-by-columns",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify(payload),
-      //   }
-      // );
+
       toast.success("Widget saved successfully!");
 
-      // const responseData = await response.json();
-
-      // if (!response.ok) {
-      //   // handle API errors
-      //   toast.error(responseData.message || "Failed to fetch data");
-      //   return;
-      // }
-      // Create updated config with the response data
       const updatedConfig = {
         ...config,
         data: response?.data || [],
@@ -171,7 +157,7 @@ export const WidgetForm = ({
         <Label htmlFor="chartType">Chart Type</Label>
         <Select
           value={config.chartType}
-          onValueChange={(value: ChartType) =>
+          onValueChange={(value: IChartType) =>
             setConfig({ ...config, chartType: value })
           }
         >
