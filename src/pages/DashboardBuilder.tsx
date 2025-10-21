@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
@@ -435,21 +436,23 @@ const DashboardBuilder = () => {
       <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
         <SheetContent className="w-full sm:max-w-full overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>
+            <SheetTitle className="">
               {isEditMode ? "Edit Widget Configuration" : "Create New Widget"}
             </SheetTitle>
           </SheetHeader>
-          <DashboardWidgetPanel
-            initialConfig={
-              widgets.find((w) => w.id === editingWidgetId)?.config ||
-              editingWidget?.config
-            }
-            onSave={handleSaveWidget}
-            onCancel={() => {
-              setIsEditSheetOpen(false);
-              setEditingWidgetId(null);
-            }}
-          />
+          <div className=" ">
+            <DashboardWidgetPanel
+              initialConfig={
+                widgets.find((w) => w.id === editingWidgetId)?.config ||
+                editingWidget?.config
+              }
+              onSave={handleSaveWidget}
+              onCancel={() => {
+                setIsEditSheetOpen(false);
+                setEditingWidgetId(null);
+              }}
+            />
+          </div>
         </SheetContent>
       </Sheet>
     </div>

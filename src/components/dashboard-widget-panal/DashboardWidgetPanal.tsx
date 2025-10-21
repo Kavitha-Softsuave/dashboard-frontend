@@ -48,13 +48,14 @@ function DashboardWidgetPanel({
         </div>
       ) : (
         <div className="w-full flex">
-          <div className="flex-1 p-4 ">
+          <div className="w-3/4 p-4 ">
             <h1 className="mb-3 text-xl font-semibold text-foreground">
               {fileData?.data?.fileName}
             </h1>
             <CustomTable
               data={fileData?.data?.fileContent}
               caption="Employee Information Table"
+              className="h-[calc(100vh-200px)]"
             />
           </div>
           <WidgetForm

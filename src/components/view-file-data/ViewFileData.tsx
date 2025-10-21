@@ -5,6 +5,8 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/store/hooks";
 import { useGetFullFileDataQuery } from "@/store/api";
+import { Spinner } from "../ui/spinner";
+import Loader from "../loader/Loader";
 
 const sampleData = [
   { name: "John Doe", age: 28, country: "USA", role: "Developer" },
@@ -23,7 +25,7 @@ function ViewFileData() {
   } = useGetFullFileDataQuery({ id: user.fileId });
 
   return (
-    <div className="flex-1 p-4 ">
+    <div className="flex-1 p-4">
       <div className="flex gap-2 items-center py-2">
         <Button
           variant="ghost"
@@ -36,10 +38,14 @@ function ViewFileData() {
           {fileData?.data?.fileName}
         </h1>
       </div>
-      <CustomTable
-        data={fileData?.data?.fileContent}
-        caption="Employee Information Table"
-      />
+      <div className="relative">
+        <CustomTable
+          data={fileData?.data?.fileContent}
+          caption="Employee Information Table"
+          className="h-[calc(100vh-150px)]"
+        />
+        <Loader isLoading={isLoading} />
+      </div>
     </div>
   );
 }

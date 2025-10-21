@@ -109,7 +109,7 @@ function UploadForm({ onClose }: IProp) {
             </div>
           )}
         </div>
-        <Button type="submit" className="w-full my-2">
+        <Button type="submit" className="w-full my-2" disabled={isLoading}>
           Upload file
         </Button>
       </form>

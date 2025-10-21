@@ -8,15 +8,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 interface CustomTableProps {
   data: Record<string, any>[];
   caption?: string;
+  className?: string;
 }
 
 const CustomTable: React.FC<CustomTableProps> = ({
   data,
   caption = "Data Overview",
+  className = "",
 }) => {
   // handle empty data
   if (!data || data.length === 0) {
@@ -31,12 +34,12 @@ const CustomTable: React.FC<CustomTableProps> = ({
   const columns = Object.keys(data[0]);
 
   return (
-    <div className="rounded-xl border bg-card p-4 shadow-sm relative h-[calc(100vh-150px)] overflow-auto">
-      <Table>
+    <div className="rounded-xl border bg-card p-4 shadow-sm relative">
+      <Table className={(cn("overflow-auto"), className)}>
         {/* <TableCaption className="text-muted-foreground">{caption}</TableCaption> */}
 
         {/* Header */}
-        <TableHeader>
+        <TableHeader className="sticky top-0 bg-background">
           <TableRow className="bg-muted/40">
             {columns.map((col) => (
               <TableHead
