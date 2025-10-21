@@ -27,6 +27,15 @@ interface WidgetPreviewProps {
   showEditButton?: boolean;
 }
 
+// Placeholder data for unconfigured widgets
+const placeholderData = [
+  { x: 'A', y: 30 },
+  { x: 'B', y: 50 },
+  { x: 'C', y: 40 },
+  { x: 'D', y: 60 },
+  { x: 'E', y: 35 },
+];
+
 export const WidgetPreview = ({
   widget,
   onEdit,
@@ -34,124 +43,192 @@ export const WidgetPreview = ({
   showEditButton = false,
 }: WidgetPreviewProps) => {
   const { config } = widget;
+  
+  // Check if widget is configured
+  const isConfigured = config.data && config.data.length > 0 && config.xAxis && config.yAxis;
+  const grayColor = '#9ca3af';
 
   const renderChart = () => {
-  const filteredData = widget.config?.data.map((d) => ({
-    [config.xAxis]: d.xAxis,
-    [config.yAxis]: d.yAxis,
-  }));
+    // If not configured, show gray preview
+    if (!isConfigured) {
+      const commonProps = {
+        data: placeholderData,
+        margin: { top: 5, right: 5, left: 5, bottom: 5 },
+      };
 
-  const baseColor = config.colorPalette?.[0] || "hsl(var(--primary))";
+      switch (config.chartType) {
+        case "bar":
+          return (
+            <BarChart {...commonProps}>
+              <Bar dataKey="y" fill={grayColor} />
+            </BarChart>
+          );
 
-  const commonProps = {
-    data: filteredData,
-    margin: { top: 10, right: 30, left: 0, bottom: 0 },
-  };
+        case "line":
+          return (
+            <LineChart {...commonProps}>
+              <Line type="monotone" dataKey="y" stroke={grayColor} strokeWidth={2} dot={false} />
+            </LineChart>
+          );
 
-  const xAxisProps = {
-    dataKey: config.xAxis,
-    label: config.xAxisLabel
-      ? { value: config.xAxisLabel, position: "insideBottom", offset: -5 }
-      : undefined,
-  };
+        case "pie":
+          return (
+            <PieChart>
+              <Pie
+                data={placeholderData}
+                dataKey="y"
+                nameKey="x"
+                cx="50%"
+                cy="50%"
+                outerRadius={60}
+              >
+                {placeholderData.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={grayColor} />
+                ))}
+              </Pie>
+            </PieChart>
+          );
 
-  const yAxisProps = {
-    dataKey: config.yAxis,
-    label: config.yAxisLabel
-      ? { value: config.yAxisLabel, angle: -90, position: "insideLeft" }
-      : undefined,
-  };
-
-  switch (config.chartType) {
-    case "bar":
-      return (
-        <BarChart {...commonProps}>
-          {config.showGrid && <CartesianGrid strokeDasharray="3 3" />}
-          <XAxis {...xAxisProps} />
-          <YAxis {...yAxisProps} />
-          <Tooltip />
-          {config.showLegend && <Legend />}
-          <Bar dataKey={config.yAxis} fill={baseColor} />
-        </BarChart>
-      );
-
-    case "line":
-      return (
-        <LineChart {...commonProps}>
-          {config.showGrid && <CartesianGrid strokeDasharray="3 3" />}
-          <XAxis {...xAxisProps} />
-          <YAxis {...yAxisProps} />
-          <Tooltip />
-          {config.showLegend && <Legend />}
-          <Line type="monotone" dataKey={config.yAxis} stroke={baseColor} />
-        </LineChart>
-      );
-
-    case "pie":
-      return (
-        <PieChart>
-          <Pie
-            data={filteredData}
-            dataKey={config.yAxis}
-            nameKey={config.xAxis}
-            cx="50%"
-            cy="50%"
-            outerRadius={80}
-            label
-          >
-            {filteredData.map((_, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={
-                  config.colorPalette?.[index % config.colorPalette.length] ||
-                  "hsl(var(--primary))"
-                }
+        case "area":
+          return (
+            <AreaChart {...commonProps}>
+              <Area
+                type="monotone"
+                dataKey="y"
+                stroke={grayColor}
+                fill={grayColor}
+                fillOpacity={0.3}
               />
-            ))}
-          </Pie>
-          <Tooltip />
-          {config.showLegend && <Legend />}
-        </PieChart>
-      );
+            </AreaChart>
+          );
 
-    case "area":
-      return (
-        <AreaChart {...commonProps}>
-          {config.showGrid && <CartesianGrid strokeDasharray="3 3" />}
-          <XAxis {...xAxisProps} />
-          <YAxis {...yAxisProps} />
-          <Tooltip />
-          {config.showLegend && <Legend />}
-          <Area
-            type="monotone"
-            dataKey={config.yAxis}
-            stroke={baseColor}
-            fill={baseColor}
-          />
-        </AreaChart>
-      );
+        case "scatter":
+          return (
+            <ScatterChart {...commonProps}>
+              <Scatter dataKey="y" fill={grayColor} />
+            </ScatterChart>
+          );
 
-    case "scatter":
-      return (
-        <ScatterChart {...commonProps}>
-          {config.showGrid && <CartesianGrid strokeDasharray="3 3" />}
-          <XAxis {...xAxisProps} />
-          <YAxis {...yAxisProps} />
-          <Tooltip />
-          {config.showLegend && <Legend />}
-          <Scatter dataKey={config.yAxis} fill={baseColor} />
-        </ScatterChart>
-      );
+        default:
+          return null;
+      }
+    }
 
-    default:
-      return null;
-  }
-};
+    // Configured widget - show full chart with axis and primary color
+    const filteredData = widget.config?.data.map((d) => ({
+      [config.xAxis]: d.xAxis,
+      [config.yAxis]: d.yAxis,
+    }));
 
+    const baseColor = config.colorPalette?.[0] || "hsl(var(--primary))";
 
+    const commonProps = {
+      data: filteredData,
+      margin: { top: 10, right: 30, left: 0, bottom: 0 },
+    };
+
+    const xAxisProps = {
+      dataKey: config.xAxis,
+      label: config.xAxisLabel
+        ? { value: config.xAxisLabel, position: "insideBottom", offset: -5 }
+        : undefined,
+    };
+
+    const yAxisProps = {
+      dataKey: config.yAxis,
+      label: config.yAxisLabel
+        ? { value: config.yAxisLabel, angle: -90, position: "insideLeft" }
+        : undefined,
+    };
+
+    switch (config.chartType) {
+      case "bar":
+        return (
+          <BarChart {...commonProps}>
+            {config.showGrid && <CartesianGrid strokeDasharray="3 3" />}
+            <XAxis {...xAxisProps} />
+            <YAxis {...yAxisProps} />
+            <Tooltip />
+            {config.showLegend && <Legend />}
+            <Bar dataKey={config.yAxis} fill={baseColor} />
+          </BarChart>
+        );
+
+      case "line":
+        return (
+          <LineChart {...commonProps}>
+            {config.showGrid && <CartesianGrid strokeDasharray="3 3" />}
+            <XAxis {...xAxisProps} />
+            <YAxis {...yAxisProps} />
+            <Tooltip />
+            {config.showLegend && <Legend />}
+            <Line type="monotone" dataKey={config.yAxis} stroke={baseColor} />
+          </LineChart>
+        );
+
+      case "pie":
+        return (
+          <PieChart>
+            <Pie
+              data={filteredData}
+              dataKey={config.yAxis}
+              nameKey={config.xAxis}
+              cx="50%"
+              cy="50%"
+              outerRadius={80}
+              label
+            >
+              {filteredData.map((_, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={
+                    config.colorPalette?.[index % config.colorPalette.length] ||
+                    "hsl(var(--primary))"
+                  }
+                />
+              ))}
+            </Pie>
+            <Tooltip />
+            {config.showLegend && <Legend />}
+          </PieChart>
+        );
+
+      case "area":
+        return (
+          <AreaChart {...commonProps}>
+            {config.showGrid && <CartesianGrid strokeDasharray="3 3" />}
+            <XAxis {...xAxisProps} />
+            <YAxis {...yAxisProps} />
+            <Tooltip />
+            {config.showLegend && <Legend />}
+            <Area
+              type="monotone"
+              dataKey={config.yAxis}
+              stroke={baseColor}
+              fill={baseColor}
+            />
+          </AreaChart>
+        );
+
+      case "scatter":
+        return (
+          <ScatterChart {...commonProps}>
+            {config.showGrid && <CartesianGrid strokeDasharray="3 3" />}
+            <XAxis {...xAxisProps} />
+            <YAxis {...yAxisProps} />
+            <Tooltip />
+            {config.showLegend && <Legend />}
+            <Scatter dataKey={config.yAxis} fill={baseColor} />
+          </ScatterChart>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="h-full w-full flex flex-col bg-card rounded-lg border p-4">
+    <div className={`h-full w-full flex flex-col bg-card rounded-lg border p-4 ${!isConfigured ? 'border-dashed border-2 border-gray-300 bg-gray-50' : ''}`}>
       <div className="flex items-start justify-between mb-2">
         <div>
           <h3 className="font-semibold text-lg">{config.title}</h3>
@@ -159,6 +236,9 @@ export const WidgetPreview = ({
             <p className="text-sm text-muted-foreground">
               {config.description}
             </p>
+          )}
+          {!isConfigured && (
+            <p className="text-xs text-gray-400 mt-1">Click edit to configure this widget</p>
           )}
         </div>
         {showEditButton && onEdit && onDelete && (
