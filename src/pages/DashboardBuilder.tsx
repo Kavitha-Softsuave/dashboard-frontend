@@ -21,7 +21,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { WidgetPreview } from "@/components/WidgetPreview";
-import { WidgetForm } from "@/components/WidgetForm";
+import { DEFAULT_COLORS, WidgetForm } from "@/components/WidgetForm";
 import { ArrowLeft, Menu, Plus, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import GridLayout, { Layout } from "react-grid-layout";
@@ -148,7 +148,8 @@ const DashboardBuilder = () => {
         chartType: chartType,
         showLegend: false,
         showGrid: false,
-        colorPalette: [],
+        colorPalette: DEFAULT_COLORS,
+        functionality: "SUM",
       },
       createdAt: new Date().toISOString(),
     };
@@ -286,7 +287,9 @@ const DashboardBuilder = () => {
               open={isUploadFileOpen}
               onOpenChange={() => setIsUploadFileOpen(!isUploadFileOpen)}
             >
-              <PopoverTrigger className="underline">Upload CSV</PopoverTrigger>
+              <PopoverTrigger className="underline">
+                <Button variant="outline">Upload CSV</Button>
+              </PopoverTrigger>
               <PopoverContent sideOffset={15}>
                 {" "}
                 <UploadForm

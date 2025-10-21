@@ -24,7 +24,15 @@ interface WidgetFormProps {
   columns?: any;
 }
 
-const DEFAULT_COLORS = ["#8b5cf6", "#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
+const functionality = ["SUM", "COUNT"];
+
+export const DEFAULT_COLORS = [
+  "#8b5cf6",
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+];
 
 export const WidgetForm = ({
   initialConfig,
@@ -50,6 +58,7 @@ export const WidgetForm = ({
       xAxisLabel: "",
       yAxisLabel: "",
       colorPalette: DEFAULT_COLORS,
+      functionality: "SUM",
     }
   );
 
@@ -76,7 +85,8 @@ export const WidgetForm = ({
       config.title.trim() === "" ||
       config.xAxis.trim() === "" ||
       config.yAxis.trim() === "" ||
-      config.chartType.trim() === ""
+      config.chartType.trim() === "" ||
+      config.functionality.trim() === ""
     ) {
       toast.error("Please fill in all fields");
       return;
@@ -89,6 +99,7 @@ export const WidgetForm = ({
       xColumn: config.xAxis,
       yColumn: config.yAxis,
       fileId: user?.fileId,
+      functionality: config?.functionality,
     };
 
     try {
@@ -221,6 +232,30 @@ export const WidgetForm = ({
             <SelectContent>
               {yColumns.map((col) => (
                 <SelectItem key={col} value={col}>
+                  {col}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="gap-4 flex items-end w-full">
+        <div className="space-y-2 w-full">
+          <Label htmlFor="yAxis-functionality">Y-Axis Functionality</Label>
+          <Select
+            key={`functionality-${config.functionality}`}
+            value={config.functionality}
+            onValueChange={(value: string) =>
+              setConfig({ ...config, functionality: value })
+            }
+          >
+            <SelectTrigger id="yAxis-functionality">
+              <SelectValue placeholder="Select functionality" />
+            </SelectTrigger>
+            <SelectContent>
+              {functionality.map((col) => (
+                <SelectItem key={col} value={String(col)}>
                   {col}
                 </SelectItem>
               ))}

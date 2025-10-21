@@ -29,11 +29,11 @@ interface WidgetPreviewProps {
 
 // Placeholder data for unconfigured widgets
 const placeholderData = [
-  { x: 'A', y: 30 },
-  { x: 'B', y: 50 },
-  { x: 'C', y: 40 },
-  { x: 'D', y: 60 },
-  { x: 'E', y: 35 },
+  { x: "A", y: 30 },
+  { x: "B", y: 50 },
+  { x: "C", y: 40 },
+  { x: "D", y: 60 },
+  { x: "E", y: 35 },
 ];
 
 export const WidgetPreview = ({
@@ -43,10 +43,11 @@ export const WidgetPreview = ({
   showEditButton = false,
 }: WidgetPreviewProps) => {
   const { config } = widget;
-  
+
   // Check if widget is configured
-  const isConfigured = config.data && config.data.length > 0 && config.xAxis && config.yAxis;
-  const grayColor = '#9ca3af';
+  const isConfigured =
+    config.data && config.data.length > 0 && config.xAxis && config.yAxis;
+  const grayColor = "#9ca3af";
 
   const renderChart = () => {
     // If not configured, show gray preview
@@ -67,7 +68,13 @@ export const WidgetPreview = ({
         case "line":
           return (
             <LineChart {...commonProps}>
-              <Line type="monotone" dataKey="y" stroke={grayColor} strokeWidth={2} dot={false} />
+              <Line
+                type="monotone"
+                dataKey="y"
+                stroke={grayColor}
+                strokeWidth={2}
+                dot={false}
+              />
             </LineChart>
           );
 
@@ -228,7 +235,11 @@ export const WidgetPreview = ({
   };
 
   return (
-    <div className={`h-full w-full flex flex-col bg-card rounded-lg border p-4 ${!isConfigured ? 'border-dashed border-2 border-gray-300 bg-gray-50' : ''}`}>
+    <div
+      className={`h-full w-full flex flex-col bg-card rounded-lg border p-4 ${
+        !isConfigured ? "border-dashed border-2 border-gray-300 bg-gray-50" : ""
+      }`}
+    >
       <div className="flex items-start justify-between mb-2">
         <div>
           <h3 className="font-semibold text-lg">{config.title}</h3>
@@ -238,7 +249,9 @@ export const WidgetPreview = ({
             </p>
           )}
           {!isConfigured && (
-            <p className="text-xs text-gray-400 mt-1">Click edit to configure this widget</p>
+            <p className="text-xs text-gray-400 mt-1">
+              Click edit to configure this widget
+            </p>
           )}
         </div>
         {showEditButton && onEdit && onDelete && (

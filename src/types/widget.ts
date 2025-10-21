@@ -15,6 +15,7 @@ export interface IChartConfig {
   tooltipSettings?: any;
   data?: any;
   type?: string;
+  functionality: string;
 }
 
 export interface IWidget {

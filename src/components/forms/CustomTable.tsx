@@ -14,18 +14,20 @@ interface CustomTableProps {
   data: Record<string, any>[];
   caption?: string;
   className?: string;
+  noDataMessage?: string;
 }
 
 const CustomTable: React.FC<CustomTableProps> = ({
   data,
   caption = "Data Overview",
   className = "",
+  noDataMessage = "",
 }) => {
   // handle empty data
   if (!data || data.length === 0) {
     return (
       <div className="flex h-40 w-full items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">
-        No data available
+        {noDataMessage?.length ? noDataMessage : "No data available"}
       </div>
     );
   }
