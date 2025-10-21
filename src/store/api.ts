@@ -17,7 +17,7 @@ export interface SaveWidgetPayload {
 export const widgetApi = createApi({
   reducerPath: "widgetApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000/api/",
+    baseUrl: "https://tkt8nkkb-5000.inc1.devtunnels.ms/api/",
   }),
   tagTypes: ["wig"],
 
