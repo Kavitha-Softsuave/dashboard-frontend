@@ -31,8 +31,14 @@ const widgetSlice = createSlice({
       state.widgets = state.widgets.filter((w) => w.id !== action.payload);
       localStorage.setItem("widgets", JSON.stringify(state.widgets));
     },
+    resetWidget: (state) => {
+      state.widgets = [];
+      state.widgetChartData = undefined;
+      localStorage.removeItem("widgets");
+    },
   },
 });
 
-export const { addWidget, updateWidget, deleteWidget } = widgetSlice.actions;
+export const { addWidget, updateWidget, deleteWidget, resetWidget } =
+  widgetSlice.actions;
 export default widgetSlice.reducer;

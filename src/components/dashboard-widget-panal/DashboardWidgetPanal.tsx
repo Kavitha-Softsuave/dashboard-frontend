@@ -4,6 +4,7 @@ import CustomTable from "../forms/CustomTable";
 import { WidgetForm } from "../WidgetForm";
 import { useAppSelector } from "@/store/hooks";
 import { IChartConfig } from "@/types/widget";
+import Loader from "../loader/Loader";
 
 interface DashboardWidgetPanelProps {
   initialConfig?: IChartConfig;
@@ -48,7 +49,7 @@ function DashboardWidgetPanel({
         </div>
       ) : (
         <div className="w-full flex">
-          <div className="w-3/4 p-4 ">
+          <div className="w-3/4 p-4 relative">
             <h1 className="mb-3 text-xl font-semibold text-foreground">
               {fileData?.data?.fileName}
             </h1>
@@ -57,6 +58,7 @@ function DashboardWidgetPanel({
               caption="Employee Information Table"
               className="h-[calc(100vh-200px)]"
             />
+            <Loader isLoading={getWidgetDataLoading} />
           </div>
           <WidgetForm
             initialConfig={initialConfig}
