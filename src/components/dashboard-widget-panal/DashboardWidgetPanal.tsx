@@ -17,18 +17,19 @@ function DashboardWidgetPanel({
   onCancel,
 }: DashboardWidgetPanelProps) {
   const user = useAppSelector((state) => state.user);
+  const hasFileId = Boolean(user?.fileId?.length);
 
   const {
     data: columnsData,
     isLoading: getWidgetColumnLoading,
     error: getWidgetColumnError,
-  } = useGetWidgetColumnsQuery({ id: user.fileId });
+  } = useGetWidgetColumnsQuery({ id: user.fileId }, { skip: !hasFileId });
 
   const {
     data: fileData,
     isLoading: getWidgetDataLoading,
     error: getWidgetDataError,
-  } = useGetFullFileDataQuery({ id: user.fileId });
+  } = useGetFullFileDataQuery({ id: user.fileId }, { skip: !hasFileId });
 
   return (
     <div>
@@ -40,6 +41,10 @@ function DashboardWidgetPanel({
       ) : getWidgetColumnError ? (
         <div className="flex items-center justify-center p-6">
           <p className="text-destructive">Error loading columns data</p>
+        </div>
+      ) : !hasFileId ? (
+        <div className="flex items-center justify-center p-6">
+          <p className="text-destructive">File is not uploaded</p>
         </div>
       ) : (
         <div className="w-full flex">

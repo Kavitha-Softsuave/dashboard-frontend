@@ -5,7 +5,11 @@ import { updateFileId } from "@/store/userSlice";
 import React, { useState, useRef } from "react";
 import { toast } from "sonner";
 
-function UploadForm() {
+interface IProp {
+  onClose: () => void;
+}
+
+function UploadForm({ onClose }: IProp) {
   const [file, setFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef(null);
@@ -58,6 +62,7 @@ function UploadForm() {
       if (response?.data) {
         dispatch(updateFileId(response.data?.id));
       }
+      onClose();
       toast.success("File uploaded successfully!");
       setFile(null);
     } catch (err) {
@@ -70,11 +75,11 @@ function UploadForm() {
     <div className="w-full flex flex-col  items-center justify-between">
       <form
         onSubmit={handleFormSubmit}
-        className="flex flex-col items-center justify-center w-96 mx-auto"
+        className="flex flex-col items-center justify-center mx-auto"
       >
         {/* Upload Container */}
         <div
-          className={`relative flex flex-col items-center justify-center border-2 my-2 border-dashed rounded-2xl w-96 h-32 cursor-pointer transition-all duration-300 ${
+          className={`relative flex flex-col items-center justify-center border-2 my-2 border-dashed rounded-2xl  h-32 cursor-pointer transition-all duration-300 ${
             dragActive
               ? "border-blue-500 bg-blue-50"
               : "border-gray-400 bg-white"

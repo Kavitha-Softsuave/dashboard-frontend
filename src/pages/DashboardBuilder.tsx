@@ -35,6 +35,11 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import UploadForm from "@/components/forms/UploadForm";
 import CustomTable from "@/components/forms/CustomTable";
 import DashboardWidgetPanel from "@/components/dashboard-widget-panal/DashboardWidgetPanal";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const sampleData = [
   { name: "John Doe", age: 28, country: "USA", role: "Developer" },
@@ -52,6 +57,7 @@ const DashboardBuilder = () => {
   );
   const [isWidgetListOpen, setIsWidgetListOpen] = useState(true);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [isUploadFileOpen, setIsUploadFileOpen] = useState(false);
   const [isEditDashboard, setIsEditDashboard] = useState(false);
   const [editingWidget, setEditingWidget] = useState<IWidget | null>(null);
   const [editingWidgetId, setEditingWidgetId] = useState<string | null>(null);
@@ -275,6 +281,18 @@ const DashboardBuilder = () => {
                 </Button>
               </>
             )}
+            <Popover
+              open={isUploadFileOpen}
+              onOpenChange={() => setIsUploadFileOpen(!isUploadFileOpen)}
+            >
+              <PopoverTrigger className="underline">Upload CSV</PopoverTrigger>
+              <PopoverContent sideOffset={15}>
+                {" "}
+                <UploadForm
+                  onClose={() => setIsUploadFileOpen(!isUploadFileOpen)}
+                />
+              </PopoverContent>
+            </Popover>
             <Button variant="outline" onClick={() => navigate("/view-file")}>
               View Data
             </Button>
@@ -347,7 +365,6 @@ const DashboardBuilder = () => {
                     })}
                   </div>
                 </div>
-                x
               </div>
               {/* <div className="flex justify-center items-center gap-1 mb-3">
                 <Button onClick={handleAddNew} disabled={isLoading}>
@@ -435,12 +452,6 @@ const DashboardBuilder = () => {
           />
         </SheetContent>
       </Sheet>
-      <Dialog open={!user?.fileId?.length}>
-        <DialogContent hideCloseButton={true}>
-          <DialogTitle>Upload file for dashboard creation</DialogTitle>
-          <UploadForm />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
