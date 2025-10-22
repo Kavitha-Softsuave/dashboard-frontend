@@ -1,93 +1,73 @@
-# Customizable Dashboard
-A small Vite + React + TypeScript project for building chart widgets and assembling dashboards.
-This repo provides a lightweight UI to:
-- Create and manage chart widgets (title, chart type, data configuration).
-- Build dashboards by placing and resizing widget previews.
-- Save dashboards to localStorage.
-- Upload and import dashboards from JSON files.
+# Welcome to your Lovable project
 
-## Recent changes
-- Save Dashboard now navigates back to the index page after saving.
-- The two action cards on the index page were converted to action buttons placed at the top-right of the hero area for quicker access:
-  - "Manage Widgets" (navigates to `/widgets`)
-  - "Build Dashboard" (navigates to `/dashboard`)
-- **Upload Dashboard** functionality added to import dashboards from JSON files.
+## Project info
 
-## Getting started
+**URL**: https://lovable.dev/projects/1d9e170e-33d7-4f9f-9843-8069a451f738
 
-### Requirements
-- Node.js 18+ (or Bun is present in the repo but the scripts use npm/yarn normally)
-- npm or yarn
+## How can I edit this code?
 
-### Install
-```bash
-npm install
-# or
-# yarn
-```
+There are several ways of editing your application.
 
-### Development
-Run the local dev server:
-```powershell
+**Use Lovable**
+
+Simply visit the [Lovable Project](https://lovable.dev/projects/1d9e170e-33d7-4f9f-9843-8069a451f738) and start prompting.
+
+Changes made via Lovable will be committed automatically to this repo.
+
+**Use your preferred IDE**
+
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+Follow these steps:
+
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
+
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
+
+# Step 3: Install the necessary dependencies.
+npm i
+
+# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
-The app typically runs on http://localhost:5173/ (Vite default).
 
-### Build
-```powershell
-npm run build
-```
+**Edit a file directly in GitHub**
 
-### Preview production build
-```powershell
-npm run preview
-```
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-### Lint
-```powershell
-npm run lint
-```
+**Use GitHub Codespaces**
 
-## Project structure (important files)
-- `src/pages/DashboardBuilder.tsx` - Landing page with quick action buttons for dashboard builder.
-- `src/components/WidgetForm.tsx` - Form for editing/creating widget config.
-- `src/components/WidgetPreview.tsx` - Widget preview used in dashboard canvas.
-- `src/store/dashboardSlice.ts` - Redux slice with actions to manage dashboards and widgets on a dashboard.
-- `src/store/widgetSlice.ts` - (if present) widget store.
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-## Features
+## What technologies are used for this project?
 
-### Dashboard Management
-- **Create Dashboards**: Build custom dashboards by adding and arranging widgets.
-- **Save Dashboards**: Persist dashboards to `localStorage` for later use.
-- **Upload Dashboards**: Import dashboards from JSON files.
+This project is built with:
 
-### Upload Functionality
-The dashboard supports importing configurations via JSON file upload:
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
-1. Navigate to the Dashboard Builder page (`/dashboard`).
-2. Click the "Upload Dashboard" button in the toolbar.
-3. Select a valid JSON file containing dashboard configuration.
-4. The dashboard will be loaded with all widgets and their positions.
+## How can I deploy this project?
 
-#### Validation
-The upload feature validates:
-- File type (must be `.csv`)
+Simply open [Lovable](https://lovable.dev/projects/1d9e170e-33d7-4f9f-9843-8069a451f738) and click on Share -> Publish.
 
-## Notes and tips
-- Dashboards are persisted to `localStorage` when you click Save.
-- Deleting a widget from the dashboard removes it from the current dashboard state immediately.
-- Uploaded dashboards replace the current dashboard state.
-- Widget IDs should be unique within a dashboard.
+## Can I connect a custom domain to my Lovable project?
 
-## Testing the save
-1. Open the Dashboard Builder (`/dashboard`).
-2. Add at least one widget to the dashboard.
-3. Click "Save Dashboard".
-4. You will be navigated back to the dashboard page.
+Yes, you can!
 
-## Testing the upload flow
-1. Create a valid dashboard csv file following the format above.
-2. Open the Dashboard Builder (`/dashboard`).
-3. Click "Upload Dashboard" and select your csv file.
-4. Verify that widgets are loaded and positioned correctly.
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
