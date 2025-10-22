@@ -1,4 +1,4 @@
-# Chart Assembly
+# Customizable Dashboard
 
 A small Vite + React + TypeScript project for building chart widgets and assembling dashboards.
 
